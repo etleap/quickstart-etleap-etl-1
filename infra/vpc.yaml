@@ -156,6 +156,9 @@ Resources:
           Value: "Etleap NAT"
   
 Outputs:
-   VpcID:
-    Value: 
-      Ref: EtleapVPC
+  VpcId:
+    Value: !Ref EtleapVPC
+  PrivateSubnetA:
+    Value: !Ref EtleapPrivateSubnetA
+  PrivateSubnetB:
+    Value: !Ref EtleapPrivateSubnetB

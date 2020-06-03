@@ -27,6 +27,14 @@ Parameters:
   PublicKey:
     Type: String
     Default: ""
+  EtleapDBRootPassword:
+    NoEcho: true
+    Type: String
+    Default: "secretrootpasswd" # todo: remove
+  EtleapDBPassword:
+    NoEcho: true
+    Type: String
+    Default: "secretpasswd" # todo: remove
 
 Mappings: 
   RegionMap:
@@ -45,4 +53,15 @@ Resources:
           Ref: VpcCidrBlock2
         NatAMI: !FindInMap [RegionMap, !Ref "AWS::Region", nat]
       TemplateURL: ./infra/vpc.yaml
+
+  EtleapDBStack:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      Parameters:
+        VpcId: !GetAtt EtleapVPCStack.Outputs.VpcId
+        SubnetA: !GetAtt EtleapVPCStack.Outputs.PrivateSubnetA
+        SubnetB: !GetAtt EtleapVPCStack.Outputs.PrivateSubnetB  
+        EtleapDBPassword: !Ref EtleapDBPassword
+        EtleapDBRootPassword: !Ref EtleapDBRootPassword
+      TemplateURL: ./infra/rds.yaml
 
