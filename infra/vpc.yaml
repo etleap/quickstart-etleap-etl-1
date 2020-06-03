@@ -128,18 +128,14 @@ Resources:
       IpProtocol: tcp
       GroupId:
         Ref: EtleapNATSecurityGroup
-      CidrIp: 
-        Ref: EtleapPrivateSubnetB
+      CidrIp: !Sub '${VpcCidrBlock1}.${VpcCidrBlock2}.1.0/24'
 
   EtleapNATSecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
+      GroupDescription: "NAT Security Group"
       VpcId:
         Ref: EtleapVPC
-      SecurityGroupEgress:
-        - Ref: EtleapNATEgress
-      SecurityGroupIngress:
-        - Ref: EtleapNATIngress
       Tags:
         - Key: Name
           Value: "Etleap NAT"
