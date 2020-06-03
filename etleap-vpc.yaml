@@ -1,0 +1,48 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Cloudformation template to spin up an Etleap deployment inside a VPC"
+
+Parameters: 
+  DeploymentId:
+    Type: String
+    Default: "test"
+    Description: "The id of the deployment, provided by Etleap"
+  VpcCidrBlock1:
+    Type: Number
+    Default: 10
+    Description: "The first octet of the CIDR block of the desired VPC's address space"
+  VpcCidrBlock2:
+    Type: Number
+    Default: 10
+    Description: "The first octet of the CIDR block of the desired VPC's address space"
+  FirstName:
+    Type: String
+    Default: "Caius"
+  LastName:
+    Type: String
+    Default: "Brindescu"
+  Email:
+    Type: String
+    Default: "caius@etleap.com"
+  PublicKey:
+    Type: String
+    Default: ""
+
+Mappings: 
+  RegionMap:
+    us-east-1:
+      app: "ami-00e34d9b0383c3821"
+      nat: "ami-00a9d4a05375b2763"
+
+Resources: 
+  EtleapVPCStack:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      Parameters:
+        VpcCidrBlock1:
+          Ref: VpcCidrBlock1
+        VpcCidrBlock2:
+          Ref: VpcCidrBlock2
+        NatAMI: !FindInMap [RegionMap, !Ref "AWS::Region", nat]
+      TemplateURL: ./infra/vpc.yaml
+

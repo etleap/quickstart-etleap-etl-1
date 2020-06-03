@@ -1,0 +1,165 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Cloudformation template to spin up a private VPC"
+
+Parameters: 
+  VpcCidrBlock1:
+    Type: Number
+    Default: 10
+    Description: "The first octet of the CIDR block of the desired VPC's address space"
+  VpcCidrBlock2:
+    Type: Number
+    Default: 10
+    Description: "The first octet of the CIDR block of the desired VPC's address space"
+  NatAMI:
+    Type: String
+
+Resources: 
+  EtleapVPC:
+    Type: "AWS::EC2::VPC"
+    Properties:
+      CidrBlock: !Sub '${VpcCidrBlock1}.${VpcCidrBlock2}.0.0/22'
+      EnableDnsHostnames: true
+      Tags: 
+        - Key: "Name"
+          Value: "Etleap VPC"
+  
+  EtleapInternetGateway:
+    Type: "AWS::EC2::InternetGateway"
+    Properties:
+      Tags:
+        - Key: Name
+          Value: "Etleap IG"
+  
+  EtleapGatewayAttachment:
+    Type: "AWS::EC2::VPCGatewayAttachment"
+    Properties:
+      InternetGatewayId: 
+        Ref: EtleapInternetGateway
+      VpcId: 
+        Ref: EtleapVPC
+  
+  EtleapPrivateRouteTable:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      Tags:
+        - Key: "Name"
+          Value: "Etleap Private"
+      VpcId: 
+        Ref: EtleapVPC
+  
+  EtleapPublicRouteTable:
+    Type: "AWS::EC2::RouteTable"
+    Properties:
+      VpcId: 
+        Ref: EtleapVPC
+      Tags:
+        - Key: Name
+          Value: "Etleap Public"
+
+  EtleapPrivateRoute:
+    Type: "AWS::EC2::Route"
+    Properties:
+      DestinationCidrBlock: "0.0.0.0/0"
+      InstanceId: 
+        Ref: EtleapNATInstance
+      RouteTableId: 
+        Ref: EtleapPrivateRouteTable
+  
+  EtleapPrivateSubnetA:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !Sub '${AWS::Region}a'
+      CidrBlock: !Sub '${VpcCidrBlock1}.${VpcCidrBlock2}.0.0/24'
+      VpcId: 
+        Ref: EtleapVPC
+      Tags:
+        - Key: "Name"
+          Value: "Etleap A Private"
+  
+  EtleapPrivateSubnetB:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !Sub '${AWS::Region}b'
+      CidrBlock: !Sub '${VpcCidrBlock1}.${VpcCidrBlock2}.1.0/24'
+      VpcId: 
+        Ref: EtleapVPC
+      Tags:
+        - Key: "Name"
+          Value: "Etleap B Private"
+    
+  EtleapPublicSubnetA:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !Sub '${AWS::Region}a'
+      CidrBlock: !Sub '${VpcCidrBlock1}.${VpcCidrBlock2}.2.0/24'
+      VpcId:
+        Ref: EtleapVPC
+      Tags:
+        - Key: Name
+          Value: "Etleap A Public"
+  
+  EtleapPublicSubnetB:
+    Type: "AWS::EC2::Subnet"
+    Properties:
+      AvailabilityZone: !Sub '${AWS::Region}b'
+      CidrBlock: !Sub '${VpcCidrBlock1}.${VpcCidrBlock2}.3.0/24'
+      VpcId:
+        Ref: EtleapVPC
+      Tags:
+        - Key: Name
+          Value: "Etleap B Public"
+
+  EtleapNATEgress:
+    Type: "AWS::EC2::SecurityGroupEgress"
+    Properties:
+      FromPort: 0
+      ToPort: 65535
+      IpProtocol: tcp
+      GroupId:
+        Ref: EtleapNATSecurityGroup
+      CidrIp: "0.0.0.0/0"
+      
+  EtleapNATIngress:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      FromPort: 0
+      ToPort: 65535
+      IpProtocol: tcp
+      GroupId:
+        Ref: EtleapNATSecurityGroup
+      CidrIp: 
+        Ref: EtleapPrivateSubnetB
+
+  EtleapNATSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      VpcId:
+        Ref: EtleapVPC
+      SecurityGroupEgress:
+        - Ref: EtleapNATEgress
+      SecurityGroupIngress:
+        - Ref: EtleapNATIngress
+      Tags:
+        - Key: Name
+          Value: "Etleap NAT"
+  
+  EtleapNATInstance:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      InstanceType: "m3.medium"
+      ImageId: 
+        Ref: NatAMI
+      NetworkInterfaces:
+        - DeviceIndex: 0
+          AssociatePublicIpAddress: true
+          SubnetId:  
+            Ref: EtleapPublicSubnetB
+      Tags:
+        - Key: Name
+          Value: "Etleap NAT"
+  
+Outputs:
+   VpcID:
+    Value: 
+      Ref: EtleapVPC
