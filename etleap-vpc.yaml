@@ -27,10 +27,6 @@ Parameters:
   PublicKey:
     Type: String
     Default: ""
-  EtleapDBRootPassword:
-    NoEcho: true
-    Type: String
-    Default: "secretrootpasswd" # todo: remove
   EtleapDBPassword:
     NoEcho: true
     Type: String
@@ -62,6 +58,36 @@ Resources:
         SubnetA: !GetAtt EtleapVPCStack.Outputs.PrivateSubnetA
         SubnetB: !GetAtt EtleapVPCStack.Outputs.PrivateSubnetB  
         EtleapDBPassword: !Ref EtleapDBPassword
-        EtleapDBRootPassword: !Ref EtleapDBRootPassword
       TemplateURL: ./infra/rds.yaml
 
+  EtleapIAMStack:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: ./infra/iam.yaml
+
+  EtleapKMSStack:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      Parameters:
+        EtleapAppRole: !GetAtt EtleapIAMStack.Outputs.EtleapAppRole
+      TemplateURL: ./infra/kms.yaml
+  
+  EtleapAPPStack:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      Parameters:
+        VpcId: !GetAtt EtleapVPCStack.Outputs.VpcId
+        VpcCidrBlock1: !Ref VpcCidrBlock1
+        VpcCidrBlock2: !Ref VpcCidrBlock2
+        DeploymentId: !Ref DeploymentId
+        SubnetId: !GetAtt EtleapVPCStack.Outputs.PrivateSubnetB
+        ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", app]
+        EtleapDBPassword: !Ref EtleapDBPassword
+        EtleapDBSalesforcePassword: "test1234"
+        EtleapDBSecurityGroup: !GetAtt EtleapDBStack.Outputs.EtleapDBSecurityGroup
+        EtleapAppRole: !GetAtt EtleapIAMStack.Outputs.EtleapAppRole
+        FirstName: !Ref FirstName
+        LastName: !Ref LastName
+        Email: !Ref Email
+        KMSKey: !GetAtt EtleapKMSStack.Outputs.KMSKey
+      TemplateURL: ./infra/app.yaml

@@ -1,0 +1,287 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Spins up and RDS instance for Etleap"
+
+Parameters:
+  VpcId:
+    Type: String
+  DeploymentId:
+    Type: String
+    Description: Deployment ID, provided by Etleap
+  Subdomain:
+    Type: String
+    Default: dev.etleap.com
+    Description: The subdomain etleap will be accessible from
+  ImageId:
+    Type: String
+    Description: AMI to start the  instance with
+  SubnetId:
+    Type: String
+    Description: Subnet to start the instance in
+  EtleapDBPassword:
+    Type: String
+    Description: Password for the etleap app to connect to the db
+  EtleapDBSalesforcePassword:
+    Type: String
+    Description: Password for the etleap app to connect to the db
+  EtleapSetupPassword:
+    Type: String
+    Description: Password for the etleap app to connect to the db
+    Default: "etleaptest"
+  EtleapDBSecurityGroup:
+    Type: String
+  EtleapAppRole:
+    Type: String
+  FirstName:
+    Type: String
+  LastName:
+    Type: String
+  Email:
+    Type: String
+  KMSKey:
+    Type: String
+  VpcCidrBlock1:
+    Type: String
+  VpcCidrBlock2:
+    Type: String
+
+Resources:
+  EtleapApp:
+    Type: "AWS::EC2::Instance"
+    Properties:
+      IamInstanceProfile: !Ref EtleapAppInstanceProfile
+      ImageId: !Ref ImageId
+      InstanceType: "t3.large"
+      KeyName: "AWS::EC2::KeyPair::EtleapOps"
+      SecurityGroups:
+        - Ref: EtleapAppSecurityGroup
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          SubnetId: !Ref SubnetId
+      UserData: !Sub 
+        - |
+          #cloud-config
+          # -*- YAML -*-
+          apt_upgrade: true
+          locale: en_US.UTF-8
+          packages:
+          - mysql-client-core-5.7
+
+          write_files:
+          - path: /home/ubuntu/ssl_certificate/ssl.pem
+            content: |
+              ${SelfSignedCertPem}
+            owner: ubuntu:ubuntu
+          - path: /home/ubuntu/ssl_certificate/ssl.key
+            content: |
+              ${SelfSignedCertKey}
+            owner: ubuntu:ubuntu
+          - path: /tmp/db-init.sh
+            content: |
+              #!/bin/bash -e
+
+              DB_ROOT_PASSWORD=$1
+              ETLEAP_DB_PASSWORD=$2
+              SALESFORCE_DB_PASSWORD=$3
+              ORG_NAME=$4
+
+              mysql -hdbprod.etleap.internal -uroot -p$DB_ROOT_PASSWORD <<EOF
+              CREATE DATABASE IF NOT EXISTS etleap;
+              GRANT ALL PRIVILEGES ON etleap.* TO 'etleap-prod'@'%' IDENTIFIED BY "$ETLEAP_DB_PASSWORD";
+
+              CREATE DATABASE IF NOT EXISTS salesforce;
+              USE salesforce;
+              GRANT ALL PRIVILEGES ON salesforce.* TO 'salesforce'@'%' IDENTIFIED BY "$SALESFORCE_DB_PASSWORD";
+              CREATE TABLE IF NOT EXISTS jobs (id bigint(20) NOT NULL AUTO_INCREMENT,
+                user_hash varchar(64) NOT NULL,
+                job_id varchar(64) NOT NULL,
+                first_batch_id varchar(64),
+                query_hash varchar(64) NOT NULL,
+                bulk_api_calls int(11) NOT NULL,
+                failed tinyint(1) NOT NULL DEFAULT 0,
+                create_date datetime NOT NULL,
+                PRIMARY KEY (id),
+                UNIQUE KEY (user_hash, job_id),
+                INDEX user_hash_create_date (user_hash, create_date)
+              ) ENGINE=InnoDB;
+
+              FLUSH PRIVILEGES;
+
+              EOF
+
+              exit 0
+            owner: ubuntu:ubuntu
+            permissions: "0755"
+          - path: /home/ubuntu/.etleap
+            content: |
+              export CUSTOMER_VPC=1
+              export ETLEAP_DEPLOYMENT_ID=${DeploymentId}
+              export USE_PROD_SECRETS=0
+              export JOB_ROLE=customer_job,monitor
+              export ETLEAP_DB_PASSWORD=${EtleapDBPassword}
+              export SALESFORCE_DB_PASSWORD=${EtleapDBSalesforcePassword}
+              export ETLEAP_HOSTS_ALLOWED=".${Subdomain}"
+              export FRONT_END_HOSTNAME="app.${Subdomain}"
+              export ETLEAP_FRONT_END_URL="https://$FRONT_END_HOSTNAME/"
+              export ETLEAP_CORS_ALLOWED_ORIGINS="https://app.${Subdomain}"
+              export API_HOSTNAME="app.${Subdomain}"
+              export API_URL="https://$API_HOSTNAME/"
+              export ETLEAP_BASE_URL=$API_URL
+              export ETLEAP_CONF_FILE=/opt/etleap/prod-customervpc.conf
+              export ETLEAP_HTTP_SESSION_DOMAIN="app.${Subdomain}"
+              export ETLEAP_KMS_KEY_VIRGINIA="${KMSKey}"
+              export ETLEAP_SETUP_FIRST_NAME="${FirstName}"
+              export ETLEAP_SETUP_LAST_NAME="${LastName}"
+              export ETLEAP_SETUP_EMAIL="${Email}"
+              export ETLEAP_SETUP_PASSWORD="${EtleapSetupPassword}"
+              export ETLEAP_SETUP_ADMIN_PASSWORD="${EtleapAdminPassword}"
+              export ETLEAP_SETUP_INTERMEDIATE_BUCKET="${S3IntermediateBucket}"
+              export ETLEAP_SETUP_INTERMEDIATE_ACCESS_ID="${S3IntermediateUserAccessKey}"
+              export ETLEAP_SETUP_INTERMEDIATE_SECRET_KEY="${SecretAccessKey}" 
+              export ETLEAP_SETUP_INTERMEDIATE_ROLE_ARN="${S3IntermediateRole}""
+              export ENABLE_YSJES='true'
+
+          runcmd:
+          - "sed -i 's/\"dns\": \\[\".*\"\\]/\"dns\": [\"${VpcCidrBlock1}.${VpcCidrBlock2}.0.2\"]/g' /etc/docker/daemon.json"
+          - "service docker restart"
+          - "/tmp/db-init.sh "${RootDBPassword}" ${EtleapDBPassword} ${EtleapDBSalesforcePassword} ${DeploymentId}"
+          - ". /home/ubuntu/.etleap && /home/ubuntu/cron-deploy-customervpc.sh"
+        - SecretAccessKey: !GetAtt S3IntermediateUserAccessKey.SecretAccessKey
+          RootDBPassword: "{{resolve:ssm-secure:/etleap/root_db_password:2}}"
+          EtleapAdminPassword: "{{resolve:ssm-secure:/etleap/etleap_admin_password:2}}"
+          SelfSignedCertPem: "{{resolve:ssm-secure:/etleap/self_signed_cert_pem:1}}"
+          SelfSignedCertKey: "{{resolve:ssm-secure:/etleap/self_signed_cert_key:2}}"
+
+  S3IntermediateBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !Sub etleap-${DeploymentId}-intermediate
+
+  S3IntermediateUser:
+    Type: "AWS::IAM::User"
+    Properties:
+      UserName: "EtleapIntermediate"
+
+  S3IntermediateRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      AssumeRolePolicyDocument: !Sub |
+        {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "AWS": "arn:aws:iam::${AWS::AccountId}:root"
+              },
+              "Action": "sts:AssumeRole",
+              "Condition": {
+                "StringEquals": { "sts:ExternalId": "${DeploymentId}" }
+              }
+            }
+          ]
+        }
+      RoleName: EtleapIntermediate
+
+  S3IntermediateUserAccessKey:
+    Type: "AWS::IAM::AccessKey"
+    Properties:
+      UserName: !Ref S3IntermediateUser
+  
+  S3IntermediatePolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: "EtleapIntermediate"
+      PolicyDocument: !Sub | 
+        {
+          "Statement":[{
+            "Effect":"Allow",
+            "Action":[
+              "s3:GetObject",
+              "s3:ListBucket",
+              "s3:PutObject",
+              "s3:DeleteObject"
+            ],
+            "Resource":[
+              "arn:aws:s3:::${S3IntermediateBucket}",
+              "arn:aws:s3:::${S3IntermediateBucket}/*"
+            ]
+          }]
+        }
+      Users:
+        - Ref: S3IntermediateUser
+      Roles:
+        - Ref: S3IntermediateRole
+
+  EtleapAppInstanceProfile:
+    Type: "AWS::IAM::InstanceProfile"
+    Properties:
+      InstanceProfileName: "EtleapApp"
+      Roles: 
+        - !Ref EtleapAppRole
+
+  EtleapAppSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Etleap App Security Grooup"
+      GroupName: Etleap App
+      VpcId: !Ref VpcId
+      Tags:
+        - Key: Name
+          Value: Etleap App Security Group
+  
+  EtleapAppEgressSecurityGroup:
+    Type: "AWS::EC2::SecurityGroupEgress"
+    Properties:
+      CidrIp: "0.0.0.0/0"
+      FromPort: 0
+      GroupId: !Ref EtleapAppSecurityGroup
+      IpProtocol: tcp
+      ToPort: 65535
+
+  EtleapAppDbSecurityGroup:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      FromPort: 3306
+      ToPort: 3306
+      GroupId: !Ref EtleapDBSecurityGroup
+      IpProtocol: tcp
+      SourceSecurityGroupId: !Ref EtleapAppSecurityGroup
+
+  EtleapSSHSecurityGroup:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      CidrIp: "0.0.0.0/0"
+      FromPort: 22
+      ToPort: 22
+      GroupId: !Ref EtleapAppSecurityGroup
+      IpProtocol: tcp
+    
+  EtleapSSLSecurityGroup:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      CidrIp: "0.0.0.0/0"
+      FromPort: 443
+      ToPort: 443
+      GroupId: !Ref EtleapAppSecurityGroup
+      IpProtocol: tcp
+    
+  EtleapYSJESRestSecurityGroup:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      CidrIp: "0.0.0.0/0"
+      FromPort: 8080
+      ToPort: 8080
+      GroupId: !Ref EtleapAppSecurityGroup
+      IpProtocol: tcp
+  
+  EtleapYSJESHealthCheckSecurityGroup:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      CidrIp: "0.0.0.0/0"
+      FromPort: 8081
+      ToPort: 8081
+      GroupId: !Ref EtleapAppSecurityGroup
+      IpProtocol: tcp
+  

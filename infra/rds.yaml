@@ -10,9 +10,6 @@ Parameters:
     Type: String
   SubnetB:
     Type: String
-  EtleapDBRootPassword:
-    NoEcho: true
-    Type: String
   EtleapDBPassword:
     NoEcho: true
     Type: String
@@ -34,7 +31,7 @@ Resources:
       Engine: "mysql"
       EngineVersion: "5.6.41"
       MasterUsername: root
-      MasterUserPassword: !Ref "EtleapDBRootPassword"
+      MasterUserPassword: "{{resolve:ssm-secure:/etleap/root_db_password:2}}"
       StorageEncrypted: true
       StorageType: "gp2"
       VPCSecurityGroups:
@@ -81,7 +78,7 @@ Resources:
 Outputs:
   Endpoint: 
     Value: !GetAtt ["EtleapDB", "Endpoint.Address"]
-  RootPassword:
-    Value: !Ref EtleapDBRootPassword
   EtleapPassword:
     Value: !Ref EtleapDBPassword
+  EtleapDBSecurityGroup:
+    Value: !Ref EtleapDBSecurityGroup
