@@ -49,6 +49,11 @@ Resources:
           Ref: VpcCidrBlock2
         NatAMI: !FindInMap [RegionMap, !Ref "AWS::Region", nat]
       TemplateURL: ./infra/vpc.yaml
+  
+  EtleapSecretsStack:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      TemplateURL: ./infra/secrets.yaml
 
   EtleapDBStack:
     Type: "AWS::CloudFormation::Stack"
@@ -80,14 +85,18 @@ Resources:
         VpcCidrBlock1: !Ref VpcCidrBlock1
         VpcCidrBlock2: !Ref VpcCidrBlock2
         DeploymentId: !Ref DeploymentId
-        SubnetId: !GetAtt EtleapVPCStack.Outputs.PrivateSubnetB
+        SubnetId: !GetAtt EtleapVPCStack.Outputs.PublicSubnetB
         ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", app]
-        EtleapDBPassword: !Ref EtleapDBPassword
-        EtleapDBSalesforcePassword: "test1234"
-        EtleapDBSecurityGroup: !GetAtt EtleapDBStack.Outputs.EtleapDBSecurityGroup
         EtleapAppRole: !GetAtt EtleapIAMStack.Outputs.EtleapAppRole
         FirstName: !Ref FirstName
         LastName: !Ref LastName
         Email: !Ref Email
         KMSKey: !GetAtt EtleapKMSStack.Outputs.KMSKey
+        EtleapDBSecurityGroup: !GetAtt EtleapDBStack.Outputs.EtleapDBSecurityGroup
       TemplateURL: ./infra/app.yaml
+
+Outputs:
+  EtleapSetupPassword:
+    Value: !Sub '{{resolve:secretsmanager:EtleapSetupPassword:SecretString}}'
+  EtleapLoginEmail:
+    Value: !Ref Email

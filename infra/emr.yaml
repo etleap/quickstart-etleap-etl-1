@@ -1,0 +1,47 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Spins up and RDS instance for Etleap"
+
+Resources:
+  EtleapEMR:
+    Type: "AWS::EMR::Cluster"
+    Properties:
+      Name: "Etleap EMR"
+      ReleaseLabel: "emr-5.20.0"
+      Applications:
+        - Hadoop
+        - Spark
+      AutoScalingRole: String
+      Configurations:
+        - Configuration
+      EbsRootVolumeSize: Integer
+      JobFlowRole: String #required
+      LogUri: String
+      SecurityConfiguration: String
+      ServiceRole: String #required
+      Steps:
+        - StepConfig
+      Instances: #required
+        JobFlowInstancesConfig
+      BootstrapActions:
+        - Name:
+          ScriptBootstrapAction: 
+  
+
+  EMRMaster:
+    Type: "AWS::EMR::InstanceGroupConfig"
+    Properties:
+      AutoScalingPolicy:
+        AutoScalingPolicy
+      BidPrice: String
+      Configurations:
+        - Configuration
+      EbsConfiguration:
+        EbsConfiguration
+      InstanceCount: Integer #required
+      InstanceRole: String #required
+      InstanceType: String #required
+      JobFlowId: String #required
+      Market: String
+      Name: String
+    
