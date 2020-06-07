@@ -93,7 +93,22 @@ Resources:
         Email: !Ref Email
         KMSKey: !GetAtt EtleapKMSStack.Outputs.KMSKey
         EtleapDBSecurityGroup: !GetAtt EtleapDBStack.Outputs.EtleapDBSecurityGroup
+        EtleapInternalSecurityGroup: !GetAtt EtleapVPCStack.Outputs.InternalSecurityGroup
       TemplateURL: ./infra/app.yaml
+  
+  EtleapEMRStack:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      Parameters:
+        DeploymentId: !Ref DeploymentId
+        VpcId: !GetAtt EtleapVPCStack.Outputs.VpcId
+        EtleapEMRRole: !GetAtt EtleapIAMStack.Outputs.EtleapEMRRole
+        EtleapEMRInstanceProfile: !GetAtt EtleapIAMStack.Outputs.EtleapEMRInstanceProfile
+        EtleapEMRDefaultRole: !GetAtt EtleapIAMStack.Outputs.EtleapEMRDefaultRole
+        EtleapEMRAutoscalingDefaultRole: !GetAtt EtleapIAMStack.Outputs.EtleapEMRAutoscalingDefaultRole
+        EtleapEMRSubnetId: !GetAtt EtleapVPCStack.Outputs.PrivateSubnetB
+        EtleapInternalSecurityGroup: !GetAtt EtleapVPCStack.Outputs.InternalSecurityGroup
+      TemplateURL: ./infra/emr.yaml
 
 Outputs:
   EtleapSetupPassword:

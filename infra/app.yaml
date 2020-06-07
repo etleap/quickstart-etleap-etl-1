@@ -34,6 +34,8 @@ Parameters:
     Type: String
   EtleapDBSecurityGroup:
     Type: String
+  EtleapInternalSecurityGroup:
+    Type: String
 
 Resources:
   EtleapApp:
@@ -160,12 +162,12 @@ Resources:
             - "/tmp/db-init.sh ${RootDBPassword} ${EtleapDBPassword} ${EtleapDBSalesforcePassword} ${DeploymentId}"
             - ". /home/ubuntu/.etleap && /home/ubuntu/cron-deploy-customervpc.sh"
           - SecretAccessKey: !GetAtt S3IntermediateUserAccessKey.SecretAccessKey
-            RootDBPassword: 'root1234' #'{{resolve:secretsmanager:EtleapDBRootPassword}}'
-            EtleapDBPassword: 'etleap123' #'{{resolve:secretsmanager:EtleapDBPassword}}'
-            EtleapDBSalesforcePassword: 'salesforce123' #'{{resolve:secretsmanager:EtleapDBSalesforcePassword}}'
-            EtleapAdminPassword: 'admin123' #'{{resolve:secretsmanager:EtleapAdminPassword}}' 
-            EtleapSetupPassword: 'setup123' #'{{resolve:secretsmanager:EtleapSetupPassword}}'
-            SelfSignedCertKey: 'invalid' #'{{resolve:secretsmanager:SelfSignedCertificateKey}}'
+            RootDBPassword: '{{resolve:secretsmanager:EtleapDBRootPassword}}'
+            EtleapDBPassword: '{{resolve:secretsmanager:EtleapDBPassword}}'
+            EtleapDBSalesforcePassword: '{{resolve:secretsmanager:EtleapDBSalesforcePassword}}'
+            EtleapAdminPassword: '{{resolve:secretsmanager:EtleapAdminPassword}}' 
+            EtleapSetupPassword: '{{resolve:secretsmanager:EtleapSetupPassword}}'
+            SelfSignedCertKey: '{{resolve:secretsmanager:SelfSignedCertificateKey}}'
 
   S3IntermediateBucket:
     Type: "AWS::S3::Bucket"
@@ -298,6 +300,24 @@ Resources:
       ToPort: 8081
       GroupId: !Ref EtleapAppSecurityGroup
       IpProtocol: tcp
+  
+  EtleapInternalAppSecurityGroup:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      IpProtocol: tcp
+      FromPort: 0
+      ToPort: 65535
+      GroupId: !Ref EtleapAppSecurityGroup
+      SourceSecurityGroupId: !Ref EtleapInternalSecurityGroup
+  
+  EtleapAppInternalSecurityGroup:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      IpProtocol: tcp
+      FromPort: 0
+      ToPort: 65535
+      GroupId: !Ref EtleapInternalSecurityGroup
+      SourceSecurityGroupId: !Ref EtleapAppSecurityGroup
 
 Outputs:
   EtleapSetupPassword:

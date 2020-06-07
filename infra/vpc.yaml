@@ -162,6 +162,7 @@ Resources:
     Type: "AWS::EC2::Instance"
     Properties:
       InstanceType: "m3.medium"
+      SourceDestCheck: false
       ImageId: 
         Ref: NatAMI
       NetworkInterfaces:
@@ -173,6 +174,35 @@ Resources:
       Tags:
         - Key: Name
           Value: "Etleap NAT"
+
+  EtleapInternalSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Etleap Internal Security Group"
+      GroupName: "Etleap Internal"
+      VpcId: !Ref EtleapVPC
+      Tags:
+      - Key: Name
+        Value: "Etleap Internal"
+    
+  EtleapInternalEgressSecurityGroup:
+    Type: "AWS::EC2::SecurityGroupEgress"
+    Properties:
+      CidrIp: "0.0.0.0/0"
+      Description: String
+      FromPort: 0
+      ToPort: 65535
+      GroupId: !Ref EtleapInternalSecurityGroup
+      IpProtocol: tcp
+
+  EtleapInternalInternalIngressSecurityGroup:
+    Type: "AWS::EC2::SecurityGroupIngress"
+    Properties:
+      FromPort: 0
+      ToPort: 65535
+      GroupId: !Ref EtleapInternalSecurityGroup
+      IpProtocol: tcp
+      SourceSecurityGroupId: !Ref EtleapInternalSecurityGroup  
   
 Outputs:
   VpcId:
@@ -185,3 +215,5 @@ Outputs:
     Value: !Ref EtleapPublicSubnetA
   PublicSubnetB:
     Value: !Ref EtleapPublicSubnetB
+  InternalSecurityGroup:
+    Value: !Ref EtleapInternalSecurityGroup
