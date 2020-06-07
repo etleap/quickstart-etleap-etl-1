@@ -27,10 +27,9 @@ Parameters:
   PublicKey:
     Type: String
     Default: ""
-  EtleapDBPassword:
-    NoEcho: true
+  ExternalZoneId:
     Type: String
-    Default: "secretpasswd" # todo: remove
+    Default: "ZANDWKR8HMQO4"
 
 Mappings: 
   RegionMap:
@@ -62,7 +61,6 @@ Resources:
         VpcId: !GetAtt EtleapVPCStack.Outputs.VpcId
         SubnetA: !GetAtt EtleapVPCStack.Outputs.PrivateSubnetA
         SubnetB: !GetAtt EtleapVPCStack.Outputs.PrivateSubnetB  
-        EtleapDBPassword: !Ref EtleapDBPassword
       TemplateURL: ./infra/rds.yaml
 
   EtleapIAMStack:
@@ -109,6 +107,18 @@ Resources:
         EtleapEMRSubnetId: !GetAtt EtleapVPCStack.Outputs.PrivateSubnetB
         EtleapInternalSecurityGroup: !GetAtt EtleapVPCStack.Outputs.InternalSecurityGroup
       TemplateURL: ./infra/emr.yaml
+
+  EtleapRoute53Stack:
+    Type: "AWS::CloudFormation::Stack"
+    Properties:
+      Parameters:
+        EMRMasterPublicDns: !GetAtt EtleapEMRStack.Outputs.EMRMasterPublicDns
+        AppPublicIp: !GetAtt EtleapAPPStack.Outputs.EtleapAppIpAddres
+        AppPrivateDns: !GetAtt EtleapAPPStack.Outputs.EtleapAppPrivateDns
+        DBIp: !GetAtt EtleapDBStack.Outputs.Endpoint
+        ExternalZoneId: !Ref ExternalZoneId
+        VpcId: !GetAtt EtleapVPCStack.Outputs.VpcId
+      TemplateURL: ./infra/r53.yaml
 
 Outputs:
   EtleapSetupPassword:

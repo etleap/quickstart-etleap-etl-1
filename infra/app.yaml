@@ -148,26 +148,28 @@ Resources:
                 export ETLEAP_SETUP_FIRST_NAME="${FirstName}"
                 export ETLEAP_SETUP_LAST_NAME="${LastName}"
                 export ETLEAP_SETUP_EMAIL="${Email}"
-                export ETLEAP_SETUP_PASSWORD="${EtleapSetupPassword}"
-                export ETLEAP_SETUP_ADMIN_PASSWORD="${EtleapAdminPassword}"
-                export ETLEAP_SETUP_INTERMEDIATE_BUCKET="${S3IntermediateBucket}"
+                export ETLEAP_SETUP_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapSetupPassword} | jq .SecretString | sed -e 's/^"//' -e 's/"$//')"
+                export ETLEAP_SETUP_ADMIN_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapAdminPassword}" | jq .SecretString | sed -e 's/^"//' -e 's/"$//')"
+                export ETLEAP_SETUP_INTERMEDIATE_BUCKET=$(aws secretsmanager get-secret-value --secret-id ${S3IntermediateBucket}" | jq .SecretString | sed -e 's/^"//' -e 's/"$//')
                 export ETLEAP_SETUP_INTERMEDIATE_ACCESS_ID="${S3IntermediateUserAccessKey}"
                 export ETLEAP_SETUP_INTERMEDIATE_SECRET_KEY="${SecretAccessKey}"
                 export ETLEAP_SETUP_INTERMEDIATE_ROLE_ARN="${S3IntermediateRole}"
                 export ENABLE_YSJES='true'
 
             runcmd:
+            - "pip install --upgrade awscli"
+            - "exec bash"
             - "sed -i 's/\"dns\": \\[\".*\"\\]/\"dns\": [\"${VpcCidrBlock1}.${VpcCidrBlock2}.0.2\"]/g' /etc/docker/daemon.json"
             - "service docker restart"
-            - "/tmp/db-init.sh ${RootDBPassword} ${EtleapDBPassword} ${EtleapDBSalesforcePassword} ${DeploymentId}"
+            - "/tmp/db-init.sh $(aws secretsmanager get-secret-value --secret-id ${RootDBPassword}" | jq .SecretString | sed -e 's/^"//' -e 's/"$//') ${EtleapDBPassword} ${EtleapDBSalesforcePassword} ${DeploymentId}"
             - ". /home/ubuntu/.etleap && /home/ubuntu/cron-deploy-customervpc.sh"
           - SecretAccessKey: !GetAtt S3IntermediateUserAccessKey.SecretAccessKey
-            RootDBPassword: '{{resolve:secretsmanager:EtleapDBRootPassword}}'
-            EtleapDBPassword: '{{resolve:secretsmanager:EtleapDBPassword}}'
-            EtleapDBSalesforcePassword: '{{resolve:secretsmanager:EtleapDBSalesforcePassword}}'
-            EtleapAdminPassword: '{{resolve:secretsmanager:EtleapAdminPassword}}' 
-            EtleapSetupPassword: '{{resolve:secretsmanager:EtleapSetupPassword}}'
-            SelfSignedCertKey: '{{resolve:secretsmanager:SelfSignedCertificateKey}}'
+            RootDBPassword: 'EtleapDBRootPassword'
+            EtleapDBPassword: 'EtleapDBPassword'
+            EtleapDBSalesforcePassword: 'EtleapDBSalesforcePassword'
+            EtleapAdminPassword: 'EtleapAdminPassword' 
+            EtleapSetupPassword: 'EtleapSetupPassword'
+            SelfSignedCertKey: 'SelfSignedCertificateKey'
 
   S3IntermediateBucket:
     Type: "AWS::S3::Bucket"
@@ -324,3 +326,5 @@ Outputs:
     Value: !Sub '{{resolve:secretsmanager:EtleapSetupPassword}}'
   EtleapAppIpAddres:
     Value: !GetAtt EtleapApp.PublicIp
+  EtleapAppPrivateDns:
+    Value: !GetAtt EtleapApp.PrivateDnsName

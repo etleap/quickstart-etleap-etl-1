@@ -219,3 +219,7 @@ Resources:
     Type: "AWS::S3::Bucket"
     Properties:
       BucketName: !Sub etleap-${DeploymentId}-logs
+
+Outputs:
+  EMRMasterPublicDns:
+    Value: !GetAtt EtleapEMR.MasterPublicDNS
