@@ -175,6 +175,28 @@ Resources:
         }
       Roles:
         - Ref: EtleapAppRole
+
+  EtleapSecretsPolicy:
+    Type: "AWS::IAM::Policy"
+    Properties:
+      PolicyName: EtleapEC2Describe
+      PolicyDocument: |
+        {
+           "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Effect": "Allow",
+                    "Action": [
+                        "secretsmanager:GetSecretValue"
+                    ],
+                    "Resource": [
+                        "*"
+                    ]
+                }
+            ] 
+        }
+      Roles:
+        - Ref: EtleapAppRole
   
   EMRProfilePolicy:
     Type: "AWS::IAM::Policy"

@@ -15,13 +15,15 @@ Parameters:
     Type: String
   VpcId:
     Type: String
+  Subdomain:
+    Type: String
 
 Resources:
   EtleapPublicAppRecord:
     Type: "AWS::Route53::RecordSet"
     Properties:
       HostedZoneId: !Ref ExternalZoneId
-      Name: "app"
+      Name: !Sub "app.${Subdomain}"
       ResourceRecords:
         - Ref: AppPublicIp
       TTL: '5'
@@ -32,7 +34,8 @@ Resources:
     Properties:
       Name: "etleap.internal"
       VPCs:
-        - Ref: VpcId
+      - VPCId: !Ref VpcId
+        VPCRegion: !Sub "${AWS::Region}"
   
   EtleapDBProdRecord:
     Type: "AWS::Route53::RecordSet"

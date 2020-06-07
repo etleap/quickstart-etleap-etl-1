@@ -30,6 +30,9 @@ Parameters:
   ExternalZoneId:
     Type: String
     Default: "ZANDWKR8HMQO4"
+  Subdomain:
+    Type: String
+    Default: "dev.etleap.com"
 
 Mappings: 
   RegionMap:
@@ -118,6 +121,7 @@ Resources:
         DBIp: !GetAtt EtleapDBStack.Outputs.Endpoint
         ExternalZoneId: !Ref ExternalZoneId
         VpcId: !GetAtt EtleapVPCStack.Outputs.VpcId
+        Subdomain: !Ref Subdomain
       TemplateURL: ./infra/r53.yaml
 
 Outputs:

@@ -134,7 +134,7 @@ Resources:
                 export USE_PROD_SECRETS=0
                 export JOB_ROLE=customer_job,monitor
                 export ETLEAP_DB_PASSWORD=${EtleapDBPassword}
-                export SALESFORCE_DB_PASSWORD=${EtleapDBSalesforcePassword}
+                export SALESFORCE_DB_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapDBSalesforcePassword} | jq .SecretString | sed -e 's/^"//' -e 's/"$//')"
                 export ETLEAP_HOSTS_ALLOWED=".${Subdomain}"
                 export FRONT_END_HOSTNAME="app.${Subdomain}"
                 export ETLEAP_FRONT_END_URL="https://$FRONT_END_HOSTNAME/"
@@ -149,8 +149,8 @@ Resources:
                 export ETLEAP_SETUP_LAST_NAME="${LastName}"
                 export ETLEAP_SETUP_EMAIL="${Email}"
                 export ETLEAP_SETUP_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapSetupPassword} | jq .SecretString | sed -e 's/^"//' -e 's/"$//')"
-                export ETLEAP_SETUP_ADMIN_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapAdminPassword}" | jq .SecretString | sed -e 's/^"//' -e 's/"$//')"
-                export ETLEAP_SETUP_INTERMEDIATE_BUCKET=$(aws secretsmanager get-secret-value --secret-id ${S3IntermediateBucket}" | jq .SecretString | sed -e 's/^"//' -e 's/"$//')
+                export ETLEAP_SETUP_ADMIN_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapAdminPassword} | jq .SecretString | sed -e 's/^"//' -e 's/"$//')"
+                export ETLEAP_SETUP_INTERMEDIATE_BUCKET=${S3IntermediateBucket}
                 export ETLEAP_SETUP_INTERMEDIATE_ACCESS_ID="${S3IntermediateUserAccessKey}"
                 export ETLEAP_SETUP_INTERMEDIATE_SECRET_KEY="${SecretAccessKey}"
                 export ETLEAP_SETUP_INTERMEDIATE_ROLE_ARN="${S3IntermediateRole}"
