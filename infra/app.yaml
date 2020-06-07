@@ -36,6 +36,8 @@ Parameters:
     Type: String
   EtleapInternalSecurityGroup:
     Type: String
+  AllowedIPCidr:
+    Type: String
 
 Resources:
   EtleapApp:
@@ -151,8 +153,6 @@ Resources:
                 export ETLEAP_SETUP_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapSetupPassword} | jq .SecretString | sed -e 's/^"//' -e 's/"$//')"
                 export ETLEAP_SETUP_ADMIN_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapAdminPassword} | jq .SecretString | sed -e 's/^"//' -e 's/"$//')"
                 export ETLEAP_SETUP_INTERMEDIATE_BUCKET=${S3IntermediateBucket}
-                export ETLEAP_SETUP_INTERMEDIATE_ACCESS_ID="${S3IntermediateUserAccessKey}"
-                export ETLEAP_SETUP_INTERMEDIATE_SECRET_KEY="${SecretAccessKey}"
                 export ETLEAP_SETUP_INTERMEDIATE_ROLE_ARN="${S3IntermediateRole}"
                 export ENABLE_YSJES='true'
 
@@ -167,8 +167,7 @@ Resources:
                 \"$(aws secretsmanager get-secret-value --secret-id '${EtleapDBSalesforcePassword}' | jq .SecretString | sed -e 's/^"//' -e 's/"$//')\" \
                 ${DeploymentId}"
             - ". /home/ubuntu/.etleap && /home/ubuntu/cron-deploy-customervpc.sh"
-          - SecretAccessKey: !GetAtt S3IntermediateUserAccessKey.SecretAccessKey
-            RootDBPassword: 'EtleapDBRootPassword'
+          - RootDBPassword: 'EtleapDBRootPassword'
             EtleapDBPassword: 'EtleapDBPassword'
             EtleapDBSalesforcePassword: 'EtleapDBSalesforcePassword'
             EtleapAdminPassword: 'EtleapAdminPassword' 
@@ -179,11 +178,6 @@ Resources:
     Type: "AWS::S3::Bucket"
     Properties:
       BucketName: !Sub etleap-${DeploymentId}-intermediate
-
-  S3IntermediateUser:
-    Type: "AWS::IAM::User"
-    Properties:
-      UserName: "EtleapIntermediate"
 
   S3IntermediateRole:
     Type: "AWS::IAM::Role"
@@ -204,12 +198,6 @@ Resources:
             }
           ]
         }
-      RoleName: EtleapIntermediate
-
-  S3IntermediateUserAccessKey:
-    Type: "AWS::IAM::AccessKey"
-    Properties:
-      UserName: !Ref S3IntermediateUser
   
   S3IntermediatePolicy:
     Type: "AWS::IAM::Policy"
@@ -231,15 +219,12 @@ Resources:
             ]
           }]
         }
-      Users:
-        - Ref: S3IntermediateUser
       Roles:
-        - Ref: S3IntermediateRole
+        - Ref: S3IntermediateRole  
 
   EtleapAppInstanceProfile:
     Type: "AWS::IAM::InstanceProfile"
     Properties:
-      InstanceProfileName: "EtleapApp"
       Roles: 
         - !Ref EtleapAppRole
 
@@ -274,7 +259,7 @@ Resources:
   EtleapSSHSecurityGroup:
     Type: "AWS::EC2::SecurityGroupIngress"
     Properties:
-      CidrIp: "0.0.0.0/0"
+      CidrIp: !Ref AllowedIPCidr
       FromPort: 22
       ToPort: 22
       GroupId: !Ref EtleapAppSecurityGroup
@@ -283,7 +268,7 @@ Resources:
   EtleapSSLSecurityGroup:
     Type: "AWS::EC2::SecurityGroupIngress"
     Properties:
-      CidrIp: "0.0.0.0/0"
+      CidrIp: !Ref AllowedIPCidr
       FromPort: 443
       ToPort: 443
       GroupId: !Ref EtleapAppSecurityGroup
@@ -292,7 +277,7 @@ Resources:
   EtleapYSJESRestSecurityGroup:
     Type: "AWS::EC2::SecurityGroupIngress"
     Properties:
-      CidrIp: "0.0.0.0/0"
+      CidrIp: !Ref AllowedIPCidr
       FromPort: 8080
       ToPort: 8080
       GroupId: !Ref EtleapAppSecurityGroup
@@ -301,7 +286,7 @@ Resources:
   EtleapYSJESHealthCheckSecurityGroup:
     Type: "AWS::EC2::SecurityGroupIngress"
     Properties:
-      CidrIp: "0.0.0.0/0"
+      CidrIp: !Ref AllowedIPCidr
       FromPort: 8081
       ToPort: 8081
       GroupId: !Ref EtleapAppSecurityGroup

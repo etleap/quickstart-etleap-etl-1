@@ -14,7 +14,7 @@ Parameters:
   VpcCidrBlock2:
     Type: Number
     Default: 10
-    Description: "The first octet of the CIDR block of the desired VPC's address space"
+    Description: "The second octet of the CIDR block of the desired VPC's address space"
   FirstName:
     Type: String
     Default: "Caius"
@@ -24,15 +24,15 @@ Parameters:
   Email:
     Type: String
     Default: "caius@etleap.com"
-  PublicKey:
-    Type: String
-    Default: ""
   ExternalZoneId:
     Type: String
     Default: "ZANDWKR8HMQO4"
   Subdomain:
     Type: String
     Default: "dev.etleap.com"
+  AllowedIPCidr:
+    Type: String
+    Default: "0.0.0.0/0"
 
 Mappings: 
   RegionMap:
@@ -95,6 +95,7 @@ Resources:
         KMSKey: !GetAtt EtleapKMSStack.Outputs.KMSKey
         EtleapDBSecurityGroup: !GetAtt EtleapDBStack.Outputs.EtleapDBSecurityGroup
         EtleapInternalSecurityGroup: !GetAtt EtleapVPCStack.Outputs.InternalSecurityGroup
+        AllowedIPCidr: !Ref AllowedIPCidr
       TemplateURL: ./infra/app.yaml
   
   EtleapEMRStack:
