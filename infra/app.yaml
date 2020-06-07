@@ -161,7 +161,11 @@ Resources:
             - "exec bash"
             - "sed -i 's/\"dns\": \\[\".*\"\\]/\"dns\": [\"${VpcCidrBlock1}.${VpcCidrBlock2}.0.2\"]/g' /etc/docker/daemon.json"
             - "service docker restart"
-            - "/tmp/db-init.sh $(aws secretsmanager get-secret-value --secret-id ${RootDBPassword}" | jq .SecretString | sed -e 's/^"//' -e 's/"$//') ${EtleapDBPassword} ${EtleapDBSalesforcePassword} ${DeploymentId}"
+            - "/tmp/db-init.sh \
+                \"$(aws secretsmanager get-secret-value --secret-id '${RootDBPassword}' | jq .SecretString | sed -e 's/^"//' -e 's/"$//')\" \
+                \"$(aws secretsmanager get-secret-value --secret-id '${EtleapDBPassword}' | jq .SecretString | sed -e 's/^"//' -e 's/"$//')\" \
+                \"$(aws secretsmanager get-secret-value --secret-id '${EtleapDBSalesforcePassword}' | jq .SecretString | sed -e 's/^"//' -e 's/"$//')\" \
+                ${DeploymentId}"
             - ". /home/ubuntu/.etleap && /home/ubuntu/cron-deploy-customervpc.sh"
           - SecretAccessKey: !GetAtt S3IntermediateUserAccessKey.SecretAccessKey
             RootDBPassword: 'EtleapDBRootPassword'
