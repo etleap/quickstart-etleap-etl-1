@@ -44,7 +44,6 @@ Resources:
     Properties:
       Roles: 
         - Ref: EtleapEMRRole
-  
 
   EtleapEMRDefaultRole:
     Type: "AWS::IAM::Role"
