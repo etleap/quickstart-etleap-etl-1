@@ -1,0 +1,79 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: "Spins up and RDS instance for Etleap"
+
+Parameters:
+  VpcId:
+    Type: String
+    Description: "The VPC to create the instance in"
+  SubnetA:
+    Type: String
+  SubnetB:
+    Type: String
+
+Resources: 
+  EtleapDB:
+    Type: "AWS::RDS::DBInstance"
+    Properties:
+      AllocatedStorage: 500
+      AllowMajorVersionUpgrade: false
+      AutoMinorVersionUpgrade: false
+      BackupRetentionPeriod: 7
+      DBInstanceClass: "db.m4.large"
+      DBInstanceIdentifier: "etleap-db-cf"
+      DBParameterGroupName: !Ref "EtleapDBParameterGroup"
+      DBSubnetGroupName: !Ref "EtleapDBSubnetGroup"
+      DeletionProtection: true
+      EnablePerformanceInsights: true
+      Engine: "mysql"
+      EngineVersion: "5.6.41"
+      MasterUsername: root
+      MasterUserPassword: '{{resolve:secretsmanager:EtleapDBRootPassword}}'
+      StorageEncrypted: true
+      StorageType: "gp2"
+      VPCSecurityGroups:
+        - Ref: EtleapDBSecurityGroup
+
+  EtleapDBParameterGroup:
+    Type: "AWS::RDS::DBParameterGroup"
+    Properties:
+      Description: "MySQL 5.6 with Etleap modifications"
+      Family: "mysql5.6"
+      Parameters:
+        character-set-client-handshake: 0
+        collation_server: latin1_swedish_ci
+        character_set_server: latin1
+        log_bin_trust_function_creators: 1
+        binlog_format: ROW
+        innodb_lock_wait_timeout: 250
+        general_log: 0
+        long_query_time: 0.05 
+        slow_query_log: 1
+        log_warnings: 2
+        log_output: file
+        binlog_checksum: none
+    
+  EtleapDBSubnetGroup:
+    Type: "AWS::RDS::DBSubnetGroup"
+    Properties:
+      DBSubnetGroupDescription: "Etleap DB Subnet Group"
+      DBSubnetGroupName: "Etleap DB"
+      SubnetIds: 
+        - Ref: SubnetA
+        - Ref: SubnetB
+
+  EtleapDBSecurityGroup:
+    Type: "AWS::EC2::SecurityGroup"
+    Properties:
+      GroupDescription: "Etleap DB"
+      GroupName: "Etleap DB CF"
+      Tags:
+        - Key: Name
+          Value: "Etleap DB"
+      VpcId: !Ref "VpcId"
+
+Outputs:
+  Endpoint: 
+    Value: !GetAtt ["EtleapDB", "Endpoint.Address"]
+  EtleapDBSecurityGroup:
+    Value: !Ref EtleapDBSecurityGroup
