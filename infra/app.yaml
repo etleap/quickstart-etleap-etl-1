@@ -65,6 +65,7 @@ Resources:
             locale: en_US.UTF-8
             packages:
             - mysql-client-core-5.7
+            - jq
 
             write_files:
             - path: /home/ubuntu/ssl_certificate/ssl.pem
@@ -136,7 +137,7 @@ Resources:
                 export USE_PROD_SECRETS=0
                 export JOB_ROLE=customer_job,monitor
                 export ETLEAP_DB_PASSWORD=${EtleapDBPassword}
-                export SALESFORCE_DB_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapDBSalesforcePassword} | jq .SecretString | sed -e 's/^"//' -e 's/"$//')"
+                export SALESFORCE_DB_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapDBSalesforcePassword} | jq .SecretString | sed -e 's/^\"//' -e 's/\"$//')"
                 export ETLEAP_HOSTS_ALLOWED=".${Subdomain}"
                 export FRONT_END_HOSTNAME="app.${Subdomain}"
                 export ETLEAP_FRONT_END_URL="https://$FRONT_END_HOSTNAME/"
@@ -150,22 +151,22 @@ Resources:
                 export ETLEAP_SETUP_FIRST_NAME="${FirstName}"
                 export ETLEAP_SETUP_LAST_NAME="${LastName}"
                 export ETLEAP_SETUP_EMAIL="${Email}"
-                export ETLEAP_SETUP_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapSetupPassword} | jq .SecretString | sed -e 's/^"//' -e 's/"$//')"
-                export ETLEAP_SETUP_ADMIN_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapAdminPassword} | jq .SecretString | sed -e 's/^"//' -e 's/"$//')"
+                export ETLEAP_SETUP_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapSetupPassword} | jq .SecretString | sed -e 's/^\"//' -e 's/\"$//')"
+                export ETLEAP_SETUP_ADMIN_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapAdminPassword} | jq .SecretString | sed -e 's/^\"//' -e 's/\"$//')"
                 export ETLEAP_SETUP_INTERMEDIATE_BUCKET=${S3IntermediateBucket}
                 export ETLEAP_SETUP_INTERMEDIATE_ROLE_ARN="${S3IntermediateRole}"
                 export ENABLE_YSJES='true'
 
             runcmd:
-            - "pip install --upgrade awscli"
-            - "exec bash"
+            - 'pip install --upgrade awscli'
+            - 'exec bash'
             - "sed -i 's/\"dns\": \\[\".*\"\\]/\"dns\": [\"${VpcCidrBlock1}.${VpcCidrBlock2}.0.2\"]/g' /etc/docker/daemon.json"
-            - "service docker restart"
-            - "/tmp/db-init.sh \
-                \"$(aws secretsmanager get-secret-value --secret-id '${RootDBPassword}' | jq .SecretString | sed -e 's/^"//' -e 's/"$//')\" \
-                \"$(aws secretsmanager get-secret-value --secret-id '${EtleapDBPassword}' | jq .SecretString | sed -e 's/^"//' -e 's/"$//')\" \
-                \"$(aws secretsmanager get-secret-value --secret-id '${EtleapDBSalesforcePassword}' | jq .SecretString | sed -e 's/^"//' -e 's/"$//')\" \
-                ${DeploymentId}"
+            - 'service docker restart'
+            - '/tmp/db-init.sh \
+                "$(aws secretsmanager get-secret-value --secret-id '${RootDBPassword}' | jq .SecretString | sed -e 's/^\"//' -e 's/"$//')" \
+                "$(aws secretsmanager get-secret-value --secret-id '${EtleapDBPassword}' | jq .SecretString | sed -e 's/^\"//' -e 's/\"$//')" \
+                "$(aws secretsmanager get-secret-value --secret-id '${EtleapDBSalesforcePassword}' | jq .SecretString | sed -e 's/^\"//' -e 's/\"$//')" \
+                ${DeploymentId}'
             - ". /home/ubuntu/.etleap && /home/ubuntu/cron-deploy-customervpc.sh"
           - RootDBPassword: 'EtleapDBRootPassword'
             EtleapDBPassword: 'EtleapDBPassword'
