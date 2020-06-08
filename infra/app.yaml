@@ -136,7 +136,7 @@ Resources:
                 export ETLEAP_DEPLOYMENT_ID=${DeploymentId}
                 export USE_PROD_SECRETS=0
                 export JOB_ROLE=customer_job,monitor
-                export ETLEAP_DB_PASSWORD=${EtleapDBPassword}
+                export ETLEAP_DB_PASSWORD="$(aws secretsmanager get-secret-value --secret-id 'EtleapDBPassword' | jq .SecretString | sed -e 's/^\"//' -e 's/\"$//')"
                 export SALESFORCE_DB_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapDBSalesforcePassword} | jq .SecretString | sed -e 's/^\"//' -e 's/\"$//')"
                 export ETLEAP_HOSTS_ALLOWED=".${Subdomain}"
                 export FRONT_END_HOSTNAME="app.${Subdomain}"
