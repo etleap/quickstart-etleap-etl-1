@@ -3,6 +3,8 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: "Spins up and RDS instance for Etleap"
 
 Parameters:
+  KeyPairName:
+    Type: AWS::EC2::KeyPair::KeyName
   VpcId:
     Type: String
   DeploymentId:
@@ -46,7 +48,7 @@ Resources:
       IamInstanceProfile: !Ref EtleapAppInstanceProfile
       ImageId: !Ref ImageId
       InstanceType: "t3.large"
-      KeyName: "EtleapCFTest"
+      KeyName: !Ref KeyPairName
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
           DeviceIndex: 0

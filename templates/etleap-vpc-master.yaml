@@ -18,6 +18,7 @@ Metadata:
     - Label:
         default: ETLeap configuration
       Parameters:
+      - KeyPairName
       - DeploymentId
       - FirstName
       - LastName
@@ -31,6 +32,8 @@ Metadata:
     ParameterLabels:
       DeploymentId:
         default: Deployment ID
+      KeyPairName:
+        default: Key pair name
       VpcCidrBlock1:
         default: VPC CIDR block 1
       VpcCidrBlock2:
@@ -86,6 +89,9 @@ Parameters:
     Type: String
     Default: "dev.etleap.com"
     Description: "Subdomain to be created in the Route 53 hosted zone"
+  KeyPairName:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: "EC2 key pair name"
   AllowedIPCidr:
     Type: String
     Default: "0.0.0.0/0"
