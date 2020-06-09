@@ -69,21 +69,27 @@ Parameters:
   FirstName:
     Type: String
     Default: "Caius"
+    Description: "User first name"
   LastName:
     Type: String
     Default: "Brindescu"
+    Description: "User last name"
   Email:
     Type: String
     Default: "caius@etleap.com"
+    Description: "User email address"
   ExternalZoneId:
     Type: String
     Default: "ZANDWKR8HMQO4"
+    Description: "Zone ID for the Route 53 hosted zone"
   Subdomain:
     Type: String
     Default: "dev.etleap.com"
+    Description: "Subdomain to be created in the Route 53 hosted zone"
   AllowedIPCidr:
     Type: String
     Default: "0.0.0.0/0"
+    Description: "CIDR block allowed remote access to the environment"
   QSS3BucketName:
     AllowedPattern: '^[0-9a-zA-Z]+([0-9a-zA-Z-]*[0-9a-zA-Z])*$'
     ConstraintDescription:
