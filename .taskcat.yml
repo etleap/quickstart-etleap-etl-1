@@ -9,10 +9,9 @@ project:
 tests:
   etleap-no-ha:
     parameters:
-      KeyPairName: $[taskcat_getkeypair]
       QSS3BucketName: $[taskcat_autobucket]
       QSS3BucketRegion: $[taskcat_current_region]
-      Subdomain: $[taskcat_random-string].etleap.com
+      Subdomain: dev.etleap.com
     regions:
     - us-east-1
     template: templates/etleap-vpc-master.yaml

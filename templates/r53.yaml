@@ -26,7 +26,7 @@ Resources:
       Name: !Sub "app.${Subdomain}"
       ResourceRecords:
         - Ref: AppPublicIp
-      TTL: '5'
+      TTL: 5
       Type: 'A'
 
   EtleapRoute53Internal:
@@ -41,10 +41,10 @@ Resources:
     Type: "AWS::Route53::RecordSet"
     Properties:
       HostedZoneId: !Ref EtleapRoute53Internal
-      Name: "dbprod.etleap.internal." 
+      Name: "dbprod.etleap.internal."
       ResourceRecords:
         - Ref: DBIp
-      TTL: '60'
+      TTL: 60
       Type: "CNAME"
 
   EtleapReadDBProdRecord:
@@ -54,7 +54,7 @@ Resources:
       Name: "dbprod-read-replica.etleap.internal."
       ResourceRecords:
         - Ref: DBIp
-      TTL: '60'
+      TTL: 60
       Type: "CNAME"
 
   EtleapEMRRecord:
@@ -64,7 +64,7 @@ Resources:
       Name: "emr.etleap.internal."
       ResourceRecords:
         - Ref: EMRMasterPublicDns
-      TTL: '5'
+      TTL: 5
       Type: "CNAME"
 
   EtleapAppRecord:
@@ -74,5 +74,5 @@ Resources:
       Name: "app.etleap.internal."
       ResourceRecords:
         - Ref: AppPrivateDns
-      TTL: '5'
+      TTL: 5
       Type: "CNAME"

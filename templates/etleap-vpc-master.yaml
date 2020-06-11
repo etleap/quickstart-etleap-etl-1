@@ -23,6 +23,7 @@ Metadata:
       - FirstName
       - LastName
       - Email
+      - SetupPassword
     - Label:
         default: AWS Quick Start configuration
       Parameters:
@@ -44,6 +45,8 @@ Metadata:
         default: Last name
       Email:
         default: Email address
+      SetupPassword:
+        default: Etleap initial login password
       ExternalZoneId:
         default: External zone ID
       Subdomain:
@@ -81,6 +84,11 @@ Parameters:
     Type: String
     Default: "caius@etleap.com"
     Description: "User email address"
+  SetupPassword:
+    Type: String
+    Default: "test1234"
+    Description: "Etleap initial login password"
+  
   ExternalZoneId:
     Type: String
     Default: "ZANDWKR8HMQO4"
@@ -91,6 +99,7 @@ Parameters:
     Description: "Subdomain to be created in the Route 53 hosted zone"
   KeyPairName:
     Type: AWS::EC2::KeyPair::KeyName
+    Default: EtleapCFTest
     Description: "EC2 key pair name"
   AllowedIPCidr:
     Type: String
@@ -175,6 +184,8 @@ Resources:
     Type: "AWS::CloudFormation::Stack"
     Properties:
       TemplateURL:
+      Parameters:
+        DeploymentId: !Ref DeploymentId
         !Sub
           - 'https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/iam.yaml'
           - S3Region: !If [UsingDefaultBucket, !Ref 'AWS::Region', !Ref QSS3BucketRegion]
@@ -195,6 +206,7 @@ Resources:
     Type: "AWS::CloudFormation::Stack"
     Properties:
       Parameters:
+        KeyPairName: !Ref KeyPairName
         VpcId: !GetAtt EtleapVPCStack.Outputs.VpcId
         VpcCidrBlock1: !Ref VpcCidrBlock1
         VpcCidrBlock2: !Ref VpcCidrBlock2
@@ -205,6 +217,7 @@ Resources:
         FirstName: !Ref FirstName
         LastName: !Ref LastName
         Email: !Ref Email
+        SetupPassword: !Ref SetupPassword
         KMSKey: !GetAtt EtleapKMSStack.Outputs.KMSKey
         EtleapDBSecurityGroup: !GetAtt EtleapDBStack.Outputs.EtleapDBSecurityGroup
         EtleapInternalSecurityGroup: !GetAtt EtleapVPCStack.Outputs.InternalSecurityGroup
@@ -252,6 +265,6 @@ Resources:
 
 Outputs:
   EtleapSetupPassword:
-    Value: !Sub '{{resolve:secretsmanager:EtleapSetupPassword:SecretString}}'
+    Value: !Ref SetupPassword
   EtleapLoginEmail:
     Value: !Ref Email

@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: "Spins up and RDS instance for Etleap"
+Description: "Spins up an EC2 instance for Etleap's app node"
 
 Parameters:
   KeyPairName:
@@ -27,6 +27,8 @@ Parameters:
   LastName:
     Type: String
   Email:
+    Type: String
+  SetupPassword:
     Type: String
   KMSKey:
     Type: String
@@ -63,6 +65,8 @@ Resources:
           - |
             #cloud-config
             # -*- YAML -*-
+            cloud_final_modules:
+              - [scripts-user, always]
             apt_upgrade: true
             locale: en_US.UTF-8
             packages:
@@ -70,6 +74,11 @@ Resources:
             - jq
 
             write_files:
+            - path: /home/ubuntu/.aws/config
+              content: |
+                [default]
+                region = "${AWS::Region}"
+              owner: ubuntu:ubuntu
             - path: /home/ubuntu/ssl_certificate/ssl.pem
               content: |
                 -----BEGIN CERTIFICATE-----
@@ -91,10 +100,6 @@ Resources:
                 c04YhqhUzaCmm+Ui1KxJfGrheLNind0YV3udwdMAHVQninKvTCC0Rp5SwrwvC72x
                 IdrMAzUSKCQ8sKWUzcq8ddquBFP9nA==
                 -----END CERTIFICATE-----
-              owner: ubuntu:ubuntu
-            - path: /home/ubuntu/ssl_certificate/ssl.key
-              content: |
-                ${SelfSignedCertKey}
               owner: ubuntu:ubuntu
             - path: /tmp/db-init.sh
               content: |
@@ -138,8 +143,8 @@ Resources:
                 export ETLEAP_DEPLOYMENT_ID=${DeploymentId}
                 export USE_PROD_SECRETS=0
                 export JOB_ROLE=customer_job,monitor
-                export ETLEAP_DB_PASSWORD="$(aws secretsmanager get-secret-value --secret-id 'EtleapDBPassword' | jq .SecretString | sed -e 's/^\"//' -e 's/\"$//')"
-                export SALESFORCE_DB_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapDBSalesforcePassword} | jq .SecretString | sed -e 's/^\"//' -e 's/\"$//')"
+                export ETLEAP_DB_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapDBPassword} | jq -r .SecretString)"
+                export SALESFORCE_DB_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapDBSalesforcePassword} | jq -r .SecretString)"
                 export ETLEAP_HOSTS_ALLOWED=".${Subdomain}"
                 export FRONT_END_HOSTNAME="app.${Subdomain}"
                 export ETLEAP_FRONT_END_URL="https://$FRONT_END_HOSTNAME/"
@@ -150,11 +155,12 @@ Resources:
                 export ETLEAP_CONF_FILE=/opt/etleap/prod-customervpc.conf
                 export ETLEAP_HTTP_SESSION_DOMAIN="app.${Subdomain}"
                 export ETLEAP_KMS_KEY_VIRGINIA="${KMSKey}"
+                export ETLEAP_KMS_KEY_OREGON="${KMSKey}"
                 export ETLEAP_SETUP_FIRST_NAME="${FirstName}"
                 export ETLEAP_SETUP_LAST_NAME="${LastName}"
                 export ETLEAP_SETUP_EMAIL="${Email}"
-                export ETLEAP_SETUP_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapSetupPassword} | jq .SecretString | sed -e 's/^\"//' -e 's/\"$//')"
-                export ETLEAP_SETUP_ADMIN_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapAdminPassword} | jq .SecretString | sed -e 's/^\"//' -e 's/\"$//')"
+                export ETLEAP_SETUP_PASSWORD="${EtleapSetupPassword}"
+                export ETLEAP_SETUP_ADMIN_PASSWORD="$(aws secretsmanager get-secret-value --secret-id ${EtleapAdminPassword} | jq -r .SecretString)"
                 export ETLEAP_SETUP_INTERMEDIATE_BUCKET=${S3IntermediateBucket}
                 export ETLEAP_SETUP_INTERMEDIATE_ROLE_ARN="${S3IntermediateRole}"
                 export ENABLE_YSJES='true'
@@ -162,20 +168,22 @@ Resources:
             runcmd:
             - 'pip install --upgrade awscli'
             - 'exec bash'
-            - "sed -i 's/\"dns\": \\[\".*\"\\]/\"dns\": [\"${VpcCidrBlock1}.${VpcCidrBlock2}.0.2\"]/g' /etc/docker/daemon.json"
+            - 'aws secretsmanager get-secret-value --secret-id ${SelfSignedCertKey} | jq -r .SecretString > /home/ubuntu/ssl_certificate/ssl.key && chown ubuntu:ubuntu /home/ubuntu/ssl_certificate/ssl.key'
+            - 'sed -i ''s/"dns": \[".*"\]/"dns": ["${VpcCidrBlock1}.${VpcCidrBlock2}.0.2"]/g'' /etc/docker/daemon.json'
             - 'service docker restart'
             - '/tmp/db-init.sh \
-                "$(aws secretsmanager get-secret-value --secret-id '${RootDBPassword}' | jq .SecretString | sed -e 's/^\"//' -e 's/"$//')" \
-                "$(aws secretsmanager get-secret-value --secret-id '${EtleapDBPassword}' | jq .SecretString | sed -e 's/^\"//' -e 's/\"$//')" \
-                "$(aws secretsmanager get-secret-value --secret-id '${EtleapDBSalesforcePassword}' | jq .SecretString | sed -e 's/^\"//' -e 's/\"$//')" \
+                $(aws secretsmanager get-secret-value --secret-id ${RootDBPassword} | jq -r .SecretString) \
+                $(aws secretsmanager get-secret-value --secret-id ${EtleapDBPassword} | jq -r .SecretString) \
+                $(aws secretsmanager get-secret-value --secret-id ${EtleapDBSalesforcePassword} | jq -r .SecretString) \
                 ${DeploymentId}'
-            - ". /home/ubuntu/.etleap && /home/ubuntu/cron-deploy-customervpc.sh"
-          - RootDBPassword: 'EtleapDBRootPassword'
-            EtleapDBPassword: 'EtleapDBPassword'
-            EtleapDBSalesforcePassword: 'EtleapDBSalesforcePassword'
-            EtleapAdminPassword: 'EtleapAdminPassword' 
-            EtleapSetupPassword: 'EtleapSetupPassword'
-            SelfSignedCertKey: 'SelfSignedCertificateKey'
+            - '. /home/ubuntu/.etleap && /home/ubuntu/cron-deploy-customervpc.sh'
+          - RootDBPassword: EtleapDBRootPassword
+            EtleapDBPassword: EtleapDBPassword
+            EtleapDBSalesforcePassword: EtleapDBSalesforcePassword
+            EtleapAdminPassword: EtleapAdminPassword
+            EtleapSetupPassword: !Ref SetupPassword
+            SelfSignedCertKey: SelfSignedCertificateKey
+            S3IntermediateRole: !GetAtt S3IntermediateRole.Arn
 
   S3IntermediateBucket:
     Type: "AWS::S3::Bucket"
@@ -314,8 +322,6 @@ Resources:
       SourceSecurityGroupId: !Ref EtleapAppSecurityGroup
 
 Outputs:
-  EtleapSetupPassword:
-    Value: !Sub '{{resolve:secretsmanager:EtleapSetupPassword}}'
   EtleapAppIpAddres:
     Value: !GetAtt EtleapApp.PublicIp
   EtleapAppPrivateDns:
