@@ -202,6 +202,7 @@ Resources:
         SubnetId: !GetAtt EtleapVPCStack.Outputs.PublicSubnetB
         ImageId: !FindInMap [RegionMap, !Ref "AWS::Region", app]
         EtleapAppRole: !GetAtt EtleapIAMStack.Outputs.EtleapAppRole
+        KeyPairName: !Ref KeyPairName
         FirstName: !Ref FirstName
         LastName: !Ref LastName
         Email: !Ref Email
