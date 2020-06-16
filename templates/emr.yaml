@@ -19,6 +19,8 @@ Parameters:
     Type: String
   EtleapInternalSecurityGroup:
     Type: String
+  Route53Zone:
+    Type: String
 
 Resources:
   EtleapEMR:
@@ -96,9 +98,6 @@ Resources:
           InstanceType: c5.xlarge
           Name: "MASTER"
         Ec2SubnetId: !Ref EtleapEMRSubnetId
-        # EmrManagedMasterSecurityGroup: !Ref EtleapEMRMasterManaged
-        # EmrManagedSlaveSecurityGroup: !Ref EtleapEMRSlaveManaged
-        # ServiceAccessSecurityGroup: !Ref EtleapEMRServiceAccessManaged
         AdditionalMasterSecurityGroups:
         - Ref: EtleapInternalSecurityGroup
         AdditionalSlaveSecurityGroups:
@@ -183,37 +182,13 @@ Resources:
               Statistic: AVERAGE
               Threshold: 0.5
               Unit: COUNT
-
-  EtleapEMRMasterManaged:
-    Type: "AWS::EC2::SecurityGroup"
+  
+  EtleapEMRRecord:
+    Type: "AWS::Route53::RecordSet"
     Properties:
-      GroupDescription: "Rules managed by EMR for EMR master"
-      GroupName: "EMR Master Managed"
-      VpcId: !Ref VpcId
-      Tags:
-      - Key: Name
-        Value: "Etleap EMR Master (managed by EMR)"
-
-  EtleapEMRSlaveManaged:
-    Type: "AWS::EC2::SecurityGroup"
-    Properties:
-      GroupDescription: "Rules managed by EMR for EMR slave"
-      GroupName: "EMR Slave Managed"
-      VpcId: !Ref VpcId
-      Tags:
-      - Key: Name
-        Value: "Etleap EMR Slave (managed by EMR)"
-
-  EtleapEMRServiceAccessManaged:
-    Type: "AWS::EC2::SecurityGroup"
-    Properties:
-      GroupDescription: "Rules managed by EMR for EMR service access"
-      GroupName: "EMR Service Access Managed"
-      VpcId: !Ref VpcId
-      Tags:
-      - Key: Name
-        Value: "Etleap EMR Service Access (managed by EMR)"
-
-Outputs:
-  EMRMasterPublicDns:
-    Value: !GetAtt EtleapEMR.MasterPublicDNS
+      HostedZoneId: !Ref Route53Zone
+      Name: "emr.etleap.internal."
+      ResourceRecords:
+      - !GetAtt EtleapEMR.MasterPublicDNS
+      TTL: 5
+      Type: "CNAME"

@@ -10,6 +10,8 @@ Parameters:
     Type: String
   SubnetB:
     Type: String
+  Route53Zone:
+    Type: String
 
 Resources: 
   EtleapDB:
@@ -71,9 +73,27 @@ Resources:
         - Key: Name
           Value: "Etleap DB"
       VpcId: !Ref "VpcId"
+  
+  EtleapDBProdRecord:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      HostedZoneId: !Ref Route53Zone
+      Name: "dbprod.etleap.internal."
+      ResourceRecords:
+        - !GetAtt EtleapDB.Endpoint.Address
+      TTL: 60
+      Type: "CNAME"
+
+  EtleapReadDBProdRecord:
+    Type: "AWS::Route53::RecordSet"
+    Properties:
+      HostedZoneId: !Ref Route53Zone
+      Name: "dbprod-read-replica.etleap.internal."
+      ResourceRecords:
+        - !GetAtt EtleapDB.Endpoint.Address
+      TTL: 60
+      Type: "CNAME"
 
 Outputs:
-  Endpoint: 
-    Value: !GetAtt ["EtleapDB", "Endpoint.Address"]
   EtleapDBSecurityGroup:
     Value: !Ref EtleapDBSecurityGroup
