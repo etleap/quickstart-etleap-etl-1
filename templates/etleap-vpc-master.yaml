@@ -136,7 +136,7 @@ Parameters:
 Mappings: 
   RegionMap:
     us-east-1:
-      app: "ami-0730b9b274c6a703c"
+      app: "ami-077d276f0a7a24f4b"
       nat: "ami-00a9d4a05375b2763"
 
 Conditions:
