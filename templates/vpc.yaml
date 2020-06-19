@@ -166,7 +166,7 @@ Resources:
       ImageId: 
         Ref: NatAMI
       NetworkInterfaces:
-        - DeviceIndex: 0
+        - DeviceIndex: '0'
           AssociatePublicIpAddress: true
           SubnetId: !Ref EtleapPublicSubnetB
           GroupSet:
