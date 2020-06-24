@@ -12,7 +12,8 @@ Metadata:
       - PublicSubnetA
       - PublicSubnetB
       - PrivateSubnetA
-      - PrivateSubnetB 
+      - PrivateSubnetB
+      - AllowedIPCidr
     - Label:
         default: Etleap configuration
       Parameters:
@@ -32,15 +33,15 @@ Metadata:
       - QSS3KeyPrefix
     ParameterLabels:
       UserSpecifiedVPCId:
-        default: The VPC where to deploy Etleap in.
+        default: VPC to deploy Etleap
       PublicSubnetA:
-        default: The first public subnet
+        default: Public subnet A
       PublicSubnetB:
-        default: The second public subnet
+        default: Public subnet B
       PrivateSubnetA:
-        default: The first private subnet
+        default: Private subnet A
       PrivateSubnetB :
-        default: The second private subnet
+        default: Private subnet B
       DeploymentId:
         default: Deployment ID
       UserSpecifiedDeploymentSecret:
@@ -65,6 +66,8 @@ Metadata:
         default: Quick Start S3 key prefix
       DeploymentOption:
         default: Option to deploy etleap as High Availability or Regular
+      AllowedIPCidr:
+        default: Allowed IP CIDR
 
 Parameters:
   DeploymentId:
@@ -113,14 +116,19 @@ Parameters:
     - High Availability
   UserSpecifiedVPCId:
     Type: "AWS::EC2::VPC::Id"
+    Description: "The VPC in which to deploy ETLeap."
   PublicSubnetA:
     Type: "AWS::EC2::Subnet::Id"
+    Description: "The first public subnet."
   PublicSubnetB:
     Type: "AWS::EC2::Subnet::Id"
+    Description: "The second public subnet."
   PrivateSubnetA:
     Type: "AWS::EC2::Subnet::Id"
+    Description: "The first private subnet."
   PrivateSubnetB:
     Type: "AWS::EC2::Subnet::Id"
+    Description: "The second private subnet."
   KeyPairName:
     Type: AWS::EC2::KeyPair::KeyName
     Description: "EC2 key pair name."
