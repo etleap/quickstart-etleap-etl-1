@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: "Creates roles and users required to run the app"
+Description: "Creates roles and users required to run the app."
 
 Parameters:
   DeploymentId:
@@ -234,8 +234,6 @@ Resources:
 Outputs:
   EtleapAppRole:
     Value: !Ref EtleapAppRole
-  EtleapEMRRole:
-    Value: !Ref EtleapEMRRole
   EtleapEMRDefaultRole:
     Value: !Ref EtleapEMRDefaultRole
   EtleapEMRAutoscalingDefaultRole:

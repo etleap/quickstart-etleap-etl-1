@@ -1,19 +1,29 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: "Spins up an RDS instance for Etleap"
+Description: "Creates an RDS instance."
 
 Parameters:
   VpcId:
     Type: String
-    Description: "The VPC to create the instance in"
   SubnetA:
     Type: String
   SubnetB:
     Type: String
-  Route53Zone:
+  DeploymentOption:
     Type: String
 
+Conditions:
+  IsHighAvailability: !Equals [!Ref DeploymentOption, "High Availability"]
+
 Resources: 
+  EtleapDBRootPassword:
+    Type: "AWS::SecretsManager::Secret"
+    Properties:
+      Name: !Join ["-", [EtleapDBRootPassword, !Select [0, !Split ["-", !Select [2, !Split ["/", !Ref "AWS::StackId"]]]]]]
+      GenerateSecretString:
+        ExcludePunctuation: true
+        PasswordLength: 20
+
   EtleapDB:
     Type: "AWS::RDS::DBInstance"
     Properties:
@@ -21,8 +31,8 @@ Resources:
       AllowMajorVersionUpgrade: false
       AutoMinorVersionUpgrade: false
       BackupRetentionPeriod: 7
-      DBInstanceClass: "db.m4.large"
-      DBInstanceIdentifier: "etleap-db-cf"
+      DBInstanceClass: "db.m5.large"
+      DBInstanceIdentifier: !Join ["-", [etleap-db, !Select [0, !Split ["-", !Select [2, !Split ["/", !Ref "AWS::StackId"]]]]]]
       DBParameterGroupName: !Ref "EtleapDBParameterGroup"
       DBSubnetGroupName: !Ref "EtleapDBSubnetGroup"
       DeletionProtection: false
@@ -30,9 +40,12 @@ Resources:
       Engine: "mysql"
       EngineVersion: "5.6.41"
       MasterUsername: root
-      MasterUserPassword: '{{resolve:secretsmanager:EtleapDBRootPassword}}'
+      MasterUserPassword: !Sub 
+        - "{{resolve:secretsmanager:${EtleapDBRootPassword}}}"
+        - EtleapDBRootPassword: !Join ["-", [EtleapDBRootPassword, !Select [0, !Split ["-", !Select [2, !Split ["/", !Ref "AWS::StackId"]]]]]]
       StorageEncrypted: true
       StorageType: "gp2"
+      MultiAZ: !If [IsHighAvailability, "true", "false"]
       VPCSecurityGroups:
         - Ref: EtleapDBSecurityGroup
 
@@ -59,7 +72,7 @@ Resources:
     Type: "AWS::RDS::DBSubnetGroup"
     Properties:
       DBSubnetGroupDescription: "Etleap DB Subnet Group"
-      DBSubnetGroupName: "Etleap DB"
+      DBSubnetGroupName: !Join ["-", [Etleap-DB, !Select [0, !Split ["-", !Select [2, !Split ["/", !Ref "AWS::StackId"]]]]]]
       SubnetIds: 
         - Ref: SubnetA
         - Ref: SubnetB
@@ -68,32 +81,16 @@ Resources:
     Type: "AWS::EC2::SecurityGroup"
     Properties:
       GroupDescription: "Etleap DB"
-      GroupName: "Etleap DB CF"
+      GroupName: !Join ["-", [Etleap-DB, !Select [0, !Split ["-", !Select [2, !Split ["/", !Ref "AWS::StackId"]]]]]]
       Tags:
         - Key: Name
           Value: "Etleap DB"
-      VpcId: !Ref "VpcId"
-  
-  EtleapDBProdRecord:
-    Type: "AWS::Route53::RecordSet"
-    Properties:
-      HostedZoneId: !Ref Route53Zone
-      Name: "dbprod.etleap.internal."
-      ResourceRecords:
-        - !GetAtt EtleapDB.Endpoint.Address
-      TTL: 60
-      Type: "CNAME"
-
-  EtleapReadDBProdRecord:
-    Type: "AWS::Route53::RecordSet"
-    Properties:
-      HostedZoneId: !Ref Route53Zone
-      Name: "dbprod-read-replica.etleap.internal."
-      ResourceRecords:
-        - !GetAtt EtleapDB.Endpoint.Address
-      TTL: 60
-      Type: "CNAME"
+      VpcId: !Ref VpcId
 
 Outputs:
+  Endpoint:
+    Value: !GetAtt EtleapDB.Endpoint.Address
   EtleapDBSecurityGroup:
     Value: !Ref EtleapDBSecurityGroup
+  EtleapDBRootPassword:
+    Value: !Ref EtleapDBRootPassword
