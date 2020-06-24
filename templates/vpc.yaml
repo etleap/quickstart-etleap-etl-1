@@ -1,16 +1,12 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: "Cloudformation template to spin up a private VPC"
+Description: "Creates a VPC."
 
 Parameters: 
   VpcCidrBlock1:
     Type: Number
-    Default: 10
-    Description: "The first octet of the CIDR block of the desired VPC's address space"
   VpcCidrBlock2:
     Type: Number
-    Default: 10
-    Description: "The first octet of the CIDR block of the desired VPC's address space"
   NatAMI:
     Type: String
 
@@ -18,7 +14,7 @@ Resources:
   EtleapVPC:
     Type: "AWS::EC2::VPC"
     Properties:
-      CidrBlock: !Sub '${VpcCidrBlock1}.${VpcCidrBlock2}.0.0/22'
+      CidrBlock: !Sub "${VpcCidrBlock1}.${VpcCidrBlock2}.0.0/22"
       EnableDnsHostnames: true
       Tags: 
         - Key: "Name"
@@ -70,8 +66,8 @@ Resources:
   EtleapPrivateSubnetA:
     Type: "AWS::EC2::Subnet"
     Properties:
-      AvailabilityZone: !Sub '${AWS::Region}a'
-      CidrBlock: !Sub '${VpcCidrBlock1}.${VpcCidrBlock2}.0.0/24'
+      AvailabilityZone: !Sub "${AWS::Region}a"
+      CidrBlock: !Sub "${VpcCidrBlock1}.${VpcCidrBlock2}.0.0/24"
       VpcId: !Ref EtleapVPC
       Tags:
         - Key: "Name"
@@ -80,8 +76,8 @@ Resources:
   EtleapPrivateSubnetB:
     Type: "AWS::EC2::Subnet"
     Properties:
-      AvailabilityZone: !Sub '${AWS::Region}b'
-      CidrBlock: !Sub '${VpcCidrBlock1}.${VpcCidrBlock2}.1.0/24'
+      AvailabilityZone: !Sub "${AWS::Region}b"
+      CidrBlock: !Sub "${VpcCidrBlock1}.${VpcCidrBlock2}.1.0/24"
       VpcId: !Ref EtleapVPC
       Tags:
         - Key: "Name"
@@ -90,8 +86,8 @@ Resources:
   EtleapPublicSubnetA:
     Type: "AWS::EC2::Subnet"
     Properties:
-      AvailabilityZone: !Sub '${AWS::Region}a'
-      CidrBlock: !Sub '${VpcCidrBlock1}.${VpcCidrBlock2}.2.0/24'
+      AvailabilityZone: !Sub "${AWS::Region}a"
+      CidrBlock: !Sub "${VpcCidrBlock1}.${VpcCidrBlock2}.2.0/24"
       VpcId: !Ref EtleapVPC
       Tags:
         - Key: Name
@@ -100,8 +96,8 @@ Resources:
   EtleapPublicSubnetB:
     Type: "AWS::EC2::Subnet"
     Properties:
-      AvailabilityZone: !Sub '${AWS::Region}b'
-      CidrBlock: !Sub '${VpcCidrBlock1}.${VpcCidrBlock2}.3.0/24'
+      AvailabilityZone: !Sub "${AWS::Region}b"
+      CidrBlock: !Sub "${VpcCidrBlock1}.${VpcCidrBlock2}.3.0/24"
       VpcId: !Ref EtleapVPC
       Tags:
         - Key: Name
@@ -147,7 +143,7 @@ Resources:
       ToPort: 65535
       IpProtocol: tcp
       GroupId: !Ref EtleapNATSecurityGroup
-      CidrIp: !Sub '${VpcCidrBlock1}.${VpcCidrBlock2}.1.0/24'
+      CidrIp: !Sub "${VpcCidrBlock1}.${VpcCidrBlock2}.1.0/24"
 
   EtleapNATSecurityGroup:
     Type: "AWS::EC2::SecurityGroup"
@@ -166,7 +162,7 @@ Resources:
       ImageId: 
         Ref: NatAMI
       NetworkInterfaces:
-        - DeviceIndex: '0'
+        - DeviceIndex: "0"
           AssociatePublicIpAddress: true
           SubnetId: !Ref EtleapPublicSubnetB
           GroupSet:
@@ -175,35 +171,6 @@ Resources:
         - Key: Name
           Value: "Etleap NAT"
 
-  EtleapInternalSecurityGroup:
-    Type: "AWS::EC2::SecurityGroup"
-    Properties:
-      GroupDescription: "Etleap Internal Security Group"
-      GroupName: "Etleap Internal"
-      VpcId: !Ref EtleapVPC
-      Tags:
-      - Key: Name
-        Value: "Etleap Internal"
-    
-  EtleapInternalEgressSecurityGroup:
-    Type: "AWS::EC2::SecurityGroupEgress"
-    Properties:
-      CidrIp: "0.0.0.0/0"
-      Description: String
-      FromPort: 0
-      ToPort: 65535
-      GroupId: !Ref EtleapInternalSecurityGroup
-      IpProtocol: tcp
-
-  EtleapInternalInternalIngressSecurityGroup:
-    Type: "AWS::EC2::SecurityGroupIngress"
-    Properties:
-      FromPort: 0
-      ToPort: 65535
-      GroupId: !Ref EtleapInternalSecurityGroup
-      IpProtocol: tcp
-      SourceSecurityGroupId: !Ref EtleapInternalSecurityGroup  
-  
 Outputs:
   VpcId:
     Value: !Ref EtleapVPC
@@ -215,5 +182,3 @@ Outputs:
     Value: !Ref EtleapPublicSubnetA
   PublicSubnetB:
     Value: !Ref EtleapPublicSubnetB
-  InternalSecurityGroup:
-    Value: !Ref EtleapInternalSecurityGroup
