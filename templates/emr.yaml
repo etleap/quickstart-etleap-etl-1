@@ -1,14 +1,8 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: "Spins up an EMR cluster for Etleap"
+Description: "Creates an EMR cluster for Etleap"
 
 Parameters:
-  DeploymentId:
-    Type: String
-  VpcId:
-    Type: String
-  EtleapEMRRole:
-    Type: String
   EtleapEMRInstanceProfile:
     Type: String
   EtleapEMRDefaultRole:
@@ -36,42 +30,36 @@ Resources:
         Configurations: 
           - Classification: export
             ConfigurationProperties:
-              HADOOP_USER_CLASSPATH_FIRST: true
+              HADOOP_USER_CLASSPATH_FIRST: "true"
       - Classification: "yarn-site"
         ConfigurationProperties:
           yarn.resourcemanager.scheduler.class: "org.apache.hadoop.yarn.server.resourcemanager.scheduler.fair.FairScheduler"
           yarn.scheduler.fair.preemption: "true"
           yarn.log-aggregation-enable: "true"
-          yarn.log-aggregation.retain-seconds: 7200
+          yarn.log-aggregation.retain-seconds: "7200"
           yarn.nodemanager.remote-app-log-dir: "/log"
           yarn.node-labels.am.default-node-label-expression: "CORE_OR_TASK"
           yarn.nodemanager.node-labels.provider: "config"
           yarn.nodemanager.node-labels.provider.configured-node-partition: "CORE_OR_TASK"
       - Classification: "capacity-scheduler"
         ConfigurationProperties:
-          yarn.scheduler.capacity.root.accessible-node-labels.CORE.capacity: 0
-          yarn.scheduler.capacity.root.accessible-node-labels.CORE_OR_TASK.capacity: 100
-          yarn.scheduler.capacity.root.default.accessible-node-labels.CORE.capacity: 0
-          yarn.scheduler.capacity.root.default.accessible-node-labels.CORE_OR_TASK.capacity: 100
+          yarn.scheduler.capacity.root.accessible-node-labels.CORE.capacity: "0"
+          yarn.scheduler.capacity.root.accessible-node-labels.CORE_OR_TASK.capacity: "100"
+          yarn.scheduler.capacity.root.default.accessible-node-labels.CORE.capacity: "0"
+          yarn.scheduler.capacity.root.default.accessible-node-labels.CORE_OR_TASK.capacity: "100"
       - Classification: "mapred-site"
         ConfigurationProperties:
-          mapreduce.job.counters.limit: 512
-          mapreduce.client.submit.file.replication: 2
+          mapreduce.job.counters.limit: "512"
+          mapreduce.client.submit.file.replication: "2"
       - Classification: "emrfs-site"
         ConfigurationProperties: 
           fs.s3.enableServerSideEncryption: "true"
       - Classification: "spark-defaults"
         ConfigurationProperties:
-          spark.cleaner.periodicGC.interval: "1min"
-          spark.driver.memory: "7g"
-          spark.executor.cores: 1
-          spark.executor.extraJavaOptions: "-XX:+UseG1GC -verbose:gc -XX:+UnlockDiagnosticVMOptions -XX:+G1SummarizeConcMark -XX:InitiatingHeapOccupancyPercent=35 -Djavax.net.ssl.trustStore=/etc/pki/ca-trust/extracted/java/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
-          spark.executor.memory: "1g"
-          spark.kryoserializer.buffer.max: "128m"
-          spark.metrics.namespace: "spark.jdbc.extractor.internal"
-          spark.scheduler.mode: "FAIR"
+          spark.history.fs.cleaner.enabled: "true"
+          spark.history.fs.cleaner.interval: "1h"
+          spark.history.fs.cleaner.maxAge: "3h"
       JobFlowRole: !Ref EtleapEMRInstanceProfile
-      LogUri: !Sub "s3://${EtleapEMRLogsBucket}/logs/"
       ServiceRole: !Ref EtleapEMRDefaultRole
       Instances:
         CoreInstanceGroup:
@@ -94,12 +82,9 @@ Resources:
                 VolumesPerInstance: 1
           InstanceCount: 1
           Market: ON_DEMAND
-          InstanceType: c5.xlarge
+          InstanceType: m5.xlarge
           Name: "MASTER"
         Ec2SubnetId: !Ref EtleapEMRSubnetId
-        EmrManagedMasterSecurityGroup: !Ref EtleapEMRMasterManaged
-        EmrManagedSlaveSecurityGroup: !Ref EtleapEMRSlaveManaged
-        ServiceAccessSecurityGroup: !Ref EtleapEMRServiceAccessManaged
         AdditionalMasterSecurityGroups:
         - Ref: EtleapInternalSecurityGroup
         AdditionalSlaveSecurityGroups:
@@ -122,7 +107,7 @@ Resources:
       - Name: "Replace the Java keystore with Etleap's"
         ScriptBootstrapAction:
           Path: "s3://datadanze-emr/conf-hadoop2/install-etleap-keystore.sh"
-      - Name: "Set TCP keepaliv"
+      - Name: "Set TCP keepalive"
         ScriptBootstrapAction:
           Path: "s3://datadanze-emr/conf-hadoop2/set-tcp-keepalive.sh"
       - Name: "Copy HDFS init script"
@@ -140,7 +125,7 @@ Resources:
           VolumesPerInstance: 1
       InstanceCount: 1
       Market: SPOT
-      BidPrice: 0.21
+      BidPrice: "0.21"
       InstanceRole: TASK
       InstanceType: c5.xlarge
       JobFlowId: !Ref EtleapEMR
@@ -185,41 +170,6 @@ Resources:
               Threshold: 0.5
               Unit: COUNT
 
-  EtleapEMRMasterManaged:
-    Type: "AWS::EC2::SecurityGroup"
-    Properties:
-      GroupDescription: "Rules managed by EMR for EMR master"
-      GroupName: "EMR Master Managed"
-      VpcId: !Ref VpcId
-      Tags:
-      - Key: Name
-        Value: "Etleap EMR Master (managed by EMR)"
-
-  EtleapEMRSlaveManaged:
-    Type: "AWS::EC2::SecurityGroup"
-    Properties:
-      GroupDescription: "Rules managed by EMR for EMR slave"
-      GroupName: "EMR Slave Managed"
-      VpcId: !Ref VpcId
-      Tags:
-      - Key: Name
-        Value: "Etleap EMR Slave (managed by EMR)"
-
-  EtleapEMRServiceAccessManaged:
-    Type: "AWS::EC2::SecurityGroup"
-    Properties:
-      GroupDescription: "Rules managed by EMR for EMR service access"
-      GroupName: "EMR Service Access Managed"
-      VpcId: !Ref VpcId
-      Tags:
-      - Key: Name
-        Value: "Etleap EMR Service Access (managed by EMR)"
-
-  EtleapEMRLogsBucket:
-    Type: "AWS::S3::Bucket"
-    Properties:
-      BucketName: !Sub etleap-${DeploymentId}-logs
-
 Outputs:
-  EMRMasterPublicDns:
+  EMRHostname:
     Value: !GetAtt EtleapEMR.MasterPublicDNS

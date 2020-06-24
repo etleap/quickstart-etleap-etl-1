@@ -1,6 +1,10 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: "Creates Roles and users required to run the app"
+Description: "Creates roles and users required to run the app."
+
+Parameters:
+  DeploymentId:
+    Type: String
 
 Resources:
   EtleapAppRole:
@@ -116,31 +120,31 @@ Resources:
     Type: "AWS::IAM::Policy"
     Properties:
       PolicyName: EtleapCloudWatch 
-      PolicyDocument: |
+      PolicyDocument: !Sub | 
         {
-            "Version": "2012-10-17",
-            "Statement": [
-                {
-                    "Effect": "Allow",
-                    "Action": [
-                        "cloudwatch:DeleteAlarms",
-                        "cloudwatch:PutMetricAlarm"
-                    ],
-                    "Resource": [
-                        "arn:aws:cloudwatch:us-east-1:223848809711:alarm:*[${var.deployment_id}*]*"
-                    ]
-                },
-                {
-                    "Effect": "Allow",
-                    "Action": [
-                        "cloudwatch:PutMetricData",
-                        "cloudwatch:DescribeAlarms"
-                    ],
-                    "Resource": [
-                        "*"
-                    ]
-                }
-            ]
+          "Version": "2012-10-17",
+          "Statement": [
+              {
+                  "Effect": "Allow",
+                  "Action": [
+                      "cloudwatch:DeleteAlarms",
+                      "cloudwatch:PutMetricAlarm"
+                  ],
+                  "Resource": [
+                      "arn:aws:cloudwatch:us-east-1:223848809711:alarm:*[${DeploymentId}*]*"
+                  ]
+              },
+              {
+                  "Effect": "Allow",
+                  "Action": [
+                      "cloudwatch:PutMetricData",
+                      "cloudwatch:DescribeAlarms"
+                  ],
+                  "Resource": [
+                      "*"
+                  ]
+              }
+          ]
         }
       Roles:
         - Ref: EtleapAppRole
@@ -173,7 +177,7 @@ Resources:
   EtleapSecretsPolicy:
     Type: "AWS::IAM::Policy"
     Properties:
-      PolicyName: EtleapEC2Describe
+      PolicyName: EtleapEC2Secrets
       PolicyDocument: |
         {
            "Version": "2012-10-17",
@@ -230,8 +234,6 @@ Resources:
 Outputs:
   EtleapAppRole:
     Value: !Ref EtleapAppRole
-  EtleapEMRRole:
-    Value: !Ref EtleapEMRRole
   EtleapEMRDefaultRole:
     Value: !Ref EtleapEMRDefaultRole
   EtleapEMRAutoscalingDefaultRole:
