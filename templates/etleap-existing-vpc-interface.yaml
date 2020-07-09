@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: "Creates an Etleap deployment inside an existing VPC."
+Description: "Creates an Etleap deployment inside an existing VPC. (qs-1qqblr2nf)"
 
 Metadata:
   QuickStartDocumentation:
