@@ -6,7 +6,7 @@ project:
     - us-east-1
     - us-east-2
     - us-west-1
-    - us-west-2
+#    - us-west-2
     - ca-central-1
     - eu-central-1
     - eu-west-1
@@ -28,10 +28,16 @@ project:
 tests:
   etleap-no-ha:
     parameters:
+      AllowedIPCidr: 0.0.0.0/0
+      DeploymentId: test
+      FirstName: test
+      LastName: test
+      Email: test@test.com
+      SetupPassword: $[taskcat_genpass_32]
       KeyPairName: $[taskcat_getkeypair]
       QSS3BucketName: $[taskcat_autobucket]
       QSS3BucketRegion: $[taskcat_current_region]
       Subdomain: $[taskcat_random-string].etleap.com
     regions:
     - us-east-1
-    template: templates/etleap-vpc-master.yaml
+    template: templates/etleap-new-vpc-interface.template.yaml
