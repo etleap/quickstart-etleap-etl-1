@@ -1,5 +1,5 @@
 Deploying this Quick Start for a new VPC with
-*default parameters* builds the following Etleap ETL environment in the
+default parameters builds the following Etleap ETL environment in the
 AWS Cloud.
 
 // Replace this example diagram with your own. Send us your source PowerPoint file. Be sure to follow our guidelines here : http://(we should include these points on our contributors giude)
@@ -10,7 +10,7 @@ image::../images/architecture_diagram.png[Architectural diagram,width=643,height
 
 As shown in Figure 1, the Quick Start sets up the following:
 
-* A VPC configured with public and a private subnets, according to AWS best practices, to provide you with your own virtual network on AWS.footnote:note[The template that deploys the Quick Start into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.]
+* A VPC configured with public and private subnets, according to AWS best practices, to provide you with your own virtual network on AWS.footnote:note[The template that deploys the Quick Start into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.]
 * An Amazon S3 bucket used by Etleap to store extracted and transformed data.
 * Four AWS Identity and Access Management (IAM) roles:
 

@@ -2,7 +2,7 @@
 //Should any sections not be applicable, remove them
 
 == Test the deployment
-Once the stack has been successfully created, the *Outputs* tab shows the IP address of the Etleap instance, as well as the email and password that you can use to log in.
+After the stack has been successfully created, the *Outputs* tab shows the IP address of the Etleap instance, as well as the email and password that you can use to log in.
 
 [[best-practices-for-using-etleap-on-aws]]
 == Best practices for using Etleap on AWS
@@ -17,4 +17,4 @@ Etleap is accessed via HTTPS only. You should restrict the IP range in the _Etle
 [[support]]
 == Support
 
-Etleap’s support team is standing by to assist you in configuring connections and operating your pipelines. Reach out via in-application instant message or send an email to support@etleap.com.
+Etleap’s support team is standing by to assist you in configuring connections and operating your pipelines. Contact them through the in-application instant message option or send an email to support@etleap.com.
