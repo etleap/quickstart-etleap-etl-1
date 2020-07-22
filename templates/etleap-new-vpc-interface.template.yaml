@@ -1,8 +1,13 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: "Creates an Etleap deployment inside a newly created VPC."
+Description: "Creates an Etleap deployment inside a newly created VPC. (qs-1qtopggll)"
 
 Metadata:
+  QuickStartDocumentation:
+    EntrypointName: "Launch into a new VPC"
+    OptionalParameters:
+      - DeploymentId
+      - UserSpecifiedDeploymentSecret
   AWS::CloudFormation::Interface:
     ParameterGroups:
     - Label:
@@ -21,7 +26,7 @@ Metadata:
       - LastName
       - Email
       - SetupPassword
-      - DeploymentOption
+#      - DeploymentOption
     - Label:
         default: AWS Quick Start configuration
       Parameters:
@@ -55,8 +60,8 @@ Metadata:
         default: Quick Start S3 bucket region
       QSS3KeyPrefix:
         default: Quick Start S3 key prefix
-      DeploymentOption:
-        default: Option to deploy etleap as High Availability or Regular
+#      DeploymentOption:
+#        default: Option to deploy etleap as High Availability or Regular
 
 Parameters:
   DeploymentId:
@@ -96,13 +101,14 @@ Parameters:
     MinLength: 8
     MaxLength: 64
     ConstraintDescription: "Must be between 8 and 64 characters long."
-  DeploymentOption:
-    Type: String
-    Description: "Deploy Etleap in High Availability mode."
-    Default: Regular
-    AllowedValues:
-    - Regular
-    - High Availability
+    NoEcho: 'true'
+#  DeploymentOption:
+#    Type: String
+#    Description: "Deploy Etleap in High Availability mode."
+#    Default: Regular
+#    AllowedValues:
+#    - Regular
+#    - High Availability
   VpcCidrBlock1:
     Type: Number
     Default: 10
@@ -148,6 +154,7 @@ Parameters:
       S3 key prefix for the Quick Start assets. Quick Start key prefix
       can include numbers, lowercase letters, uppercase letters, hyphens (-), and
       forward slashes (/).
+    Default: quickstart-etleap-etl/
     AllowedPattern: "^[0-9a-zA-Z-/]*$"
     ConstraintDescription: |
       Quick Start key prefix can include numbers, lowercase letters,
@@ -171,7 +178,7 @@ Resources:
         LastName: !Ref LastName        
         Email: !Ref Email
         SetupPassword: !Ref SetupPassword
-        DeploymentOption: !Ref DeploymentOption
+        DeploymentOption: Regular
         KeyPairName: !Ref KeyPairName
         AllowedIPCidr: !Ref AllowedIPCidr        
         QSS3BucketName: !Ref QSS3BucketName
