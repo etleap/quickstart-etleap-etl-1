@@ -8,7 +8,7 @@ AWS Cloud.
 [link=images/architecture_diagram.png]
 image::../images/architecture_diagram.png[Architectural diagram,width=643,height=489]
 
-As shown in Figure 1, the Quick Start sets up the following:
+As shown in figure 1, the Quick Start sets up the following:
 
 * A VPC configured with public and private subnets, according to AWS best practices, to provide you with your own virtual network on AWS.footnote:note[The template that deploys the Quick Start into an existing VPC skips the components marked by asterisks and prompts you for your existing VPC configuration.]
 * An Amazon S3 bucket used by {partner-company-name} to store extracted and transformed data.
@@ -16,10 +16,10 @@ As shown in Figure 1, the Quick Start sets up the following:
 
 ** One attached to the {partner-company-name} Amazon EC2 instance.
 ** One attached to the Amazon EMR cluster nodes.
-** One used by Amazon EMR for auto-scaling.
+** One used by Amazon EMR for auto scaling.
 ** One used to access data in the Amazon S3 bucket.
 
-* Two AWS Key Management Service (KMS) keys in different AWS regions used to encrypt secrets within {partner-company-name}.
+* Two AWS Key Management Service (AWS KMS) keys in different AWS Regions used to encrypt secrets within {partner-company-name}.
 * In the public subnets:
 
 ** A managed network address translation (NAT) gateway to allow outbound internet access for resources in the private subnets.footnote:note[]
