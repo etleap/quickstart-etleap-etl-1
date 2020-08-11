@@ -10,6 +10,6 @@
 |Application Load Balancers |1
 |Etleap instances |1
 |Databases |1
-|EMR Clusters |1
-|S3 Buckets |1
+|EMR clusters |1
+|S3 buckets |1
 |===
