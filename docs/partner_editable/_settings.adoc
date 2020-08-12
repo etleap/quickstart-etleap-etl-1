@@ -1,9 +1,9 @@
 :quickstart-project-name: quickstart-etleap-etl
-:partner-product-name: ETL
+:partner-product-name: Etleap ETL
 :partner-company-name: Etleap
 :doc-month: August
 :doc-year: 2020
-:partner-contributors: Caius Brindescu and Christian Romming, {partner-company-name}
+:partner-contributors: Caius Brindescu and Archie Menzies, {partner-company-name}
 :quickstart-contributors: Dave May, Quick Start team
 :deployment_time: 30 minutes
 :default_deployment_region: us-east-1
