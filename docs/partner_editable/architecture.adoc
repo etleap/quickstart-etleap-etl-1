@@ -18,9 +18,9 @@ As shown in figure 1, the Quick Start sets up the following:
 ** An Amazon Relational Database Service (Amazon RDS) MySQL database used by {partner-company-name} to store metadata.
 ** An Amazon EMR cluster used by {partner-company-name} to run extractions and transformations.
 * An Amazon S3 bucket used by {partner-company-name} to store extracted and transformed data.
-* An AWS Key Management Service (AWS KMS) key in different AWS Regions used to encrypt secrets within {partner-company-name}.
+* One AWS Key Management Service (AWS KMS) key used to encrypt secrets within {partner-company-name}.
 * Four AWS Identity and Access Management (IAM) roles:
 ** One attached to the {partner-company-name} Amazon EC2 instance.
 ** One attached to the Amazon EMR cluster nodes.
-** One used by Amazon EMR for auto scaling.
-** One used to access data in the Amazon S3 bucket. 
+** One used by Amazon EMR for provisioning and service-level actions (see https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-iam-role.html[EMR Role^]).
+** One used by Amazon EMR for auto scaling (see https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-iam-role-automatic-scaling.html[Auto Scaling Role^]).
