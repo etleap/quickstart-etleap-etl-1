@@ -1,7 +1,12 @@
 AWSTemplateFormatVersion: 2010-09-09
-Description: Creates an Etleap deployment inside a newly created VPC.
+Description: Creates an Etleap deployment inside a newly created VPC. (qs-1qtopggll)
 Metadata:
-  'AWS::CloudFormation::Interface':
+  QuickStartDocumentation:
+    EntrypointName: "Launch into a new VPC"
+    OptionalParameters:
+      - DeploymentId
+      - UserSpecifiedDeploymentSecret
+  AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
           default: Network configuration
@@ -13,7 +18,6 @@ Metadata:
           default: Etleap configuration
         Parameters:
           - DeploymentId
-          - KeyPairName
           - UserSpecifiedDeploymentSecret
           - FirstName
           - LastName
@@ -23,6 +27,7 @@ Metadata:
           default: Instance configuration
         Parameters:
           - AppInstanceType
+          - KeyPairName
           - Availability
       - Label:
           default: AWS Quick Start configuration

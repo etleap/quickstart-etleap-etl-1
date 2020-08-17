@@ -24,7 +24,7 @@ project:
     - af-south-1
     - eu-south-1
   s3_regional_buckets: true
-  template: templates/etleap-vpc-master.yaml
+  template: templates/etleap-qs-new-vpc.template.yaml
 tests:
   etleap-no-ha:
     parameters:
@@ -37,7 +37,6 @@ tests:
       KeyPairName: $[taskcat_getkeypair]
       QSS3BucketName: $[taskcat_autobucket]
       QSS3BucketRegion: $[taskcat_current_region]
-      Subdomain: $[taskcat_random-string].etleap.com
     regions:
     - us-east-1
-    template: templates/etleap-new-vpc-interface.template.yaml
+    template: templates/etleap-qs-new-vpc.template.yaml
