@@ -46,6 +46,8 @@ Parameters:
     Type: String
   Availability:
     Type: String
+  SSLCertificateArn:
+    Type: String
 
 Mappings:
   NatRegionMap:
@@ -99,7 +101,7 @@ Conditions:
   GenerateNewDeploymentSecret: !Equals [!Ref UserSpecifiedDeploymentSecret, ""]
   MarketplaceDeployment: !Equals [!Ref DeploymentId, !Ref "AWS::AccountId"]
   HAMode: !Equals [!Ref Availability, "High Availability"]
-  SingleMode: !Equals [!Ref Availability, "Single Availability"]
+#  SingleMode: !Equals [!Ref Availability, "Single Availability"]
 
 Resources:
   EtleapVPC:
@@ -339,7 +341,7 @@ Resources:
         - EtleapDBRootPassword: !Join ["-", [EtleapDBRootPassword, !Select [0, !Split ["-", !Select [2, !Split ["/", !Ref "AWS::StackId"]]]]]]
       StorageEncrypted: true
       StorageType: "gp2"
-      MultiAZ: !If [HAMode, "true", "false"]
+      MultiAZ: !If [HAMode, true, false]
       VPCSecurityGroups:
         - Ref: EtleapDBSecurityGroup
 
@@ -788,7 +790,7 @@ Resources:
     Condition: HAMode
     Properties:
       Certificates:
-      - CertificateArn: "arn:aws:iam::959096951266:server-certificate/CFTest"
+      - CertificateArn: !Ref SSLCertificateArn
       DefaultActions:
       - Type: forward
         TargetGroupArn: !Ref EtleapAppTargetGroup

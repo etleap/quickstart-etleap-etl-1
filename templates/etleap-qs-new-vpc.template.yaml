@@ -6,6 +6,7 @@ Metadata:
     OptionalParameters:
       - DeploymentId
       - UserSpecifiedDeploymentSecret
+      - SSLCertificateArn
   AWS::CloudFormation::Interface:
     ParameterGroups:
       - Label:
@@ -23,6 +24,7 @@ Metadata:
           - LastName
           - Email
           - SetupPassword
+          - SSLCertificateArn
       - Label:
           default: Instance configuration
         Parameters:
@@ -60,6 +62,8 @@ Metadata:
         default: EC2 instance type
       Availability:
         default: AvailabilityMode
+      SSLCertificateArn:
+        default: SSL certificate ARN
       QSS3BucketName:
         default: Quick Start S3 bucket name
       QSS3BucketRegion:
@@ -135,10 +139,11 @@ Parameters:
   AppInstanceType:
     Type: String
     Description: The EC2 instance type.
-  AllowedValues:
+    AllowedValues:
       - t3.large
       - t3.xlarge
       - t3.2xlarge
+    Default: t3.large
   Availability:
     Type: String
     Description: Availability Mode
@@ -146,6 +151,11 @@ Parameters:
     AllowedValues:
       - Single Availability
       - High Availability
+  SSLCertificateArn:
+    Description: The SSL Certificate ID used with the load balancer. Can be left blank
+      if deploying with Single Availability.
+    Type: String
+    Default: ''
   QSS3BucketName:
     Type: String
     Description: |
@@ -172,6 +182,7 @@ Parameters:
     ConstraintDescription: |
       Quick Start key prefix can include numbers, lowercase letters,
       uppercase letters, hyphens (-), and forward slashes (/).
+    Default: quickstart-etleap-etl/
 
 Mappings:
   AppRegionMap:
@@ -240,6 +251,7 @@ Resources:
         AppInstanceType: !Ref AppInstanceType
         DeploymentId: !Ref DeploymentId
         Availability: !Ref Availability
+        SSLCertificateArn: !Ref SSLCertificateArn
       TemplateURL: 
         !Sub
           - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/etleap-master.yaml"

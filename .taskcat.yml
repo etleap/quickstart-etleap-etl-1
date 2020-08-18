@@ -40,3 +40,19 @@ tests:
     regions:
     - us-east-1
     template: templates/etleap-qs-new-vpc.template.yaml
+  etleap-ha:
+    parameters:
+      AllowedIPCidr: 0.0.0.0/0
+      Availability: 'High Availability'
+      DeploymentId: test
+      FirstName: test
+      LastName: test
+      Email: test@test.com
+      SetupPassword: $[taskcat_genpass_32]
+      KeyPairName: $[taskcat_getkeypair]
+      QSS3BucketName: $[taskcat_autobucket]
+      QSS3BucketRegion: $[taskcat_current_region]
+      SSLCertificateArn: override
+    regions:
+    - us-east-2
+    template: templates/etleap-qs-new-vpc.template.yaml

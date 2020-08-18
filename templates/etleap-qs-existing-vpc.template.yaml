@@ -30,6 +30,7 @@ Metadata:
           - LastName
           - Email
           - SetupPassword
+          - SSLCertificateArn
       - Label:
           default: Instance configuration
         Parameters:
@@ -73,6 +74,8 @@ Metadata:
         default: EC2 instance type
       Availability:
         default: Availability Mode
+      SSLCertificateArn:
+        default: SSL certificate ARN
       QSS3BucketName:
         default: Quick Start S3 bucket name
       QSS3BucketRegion:
@@ -157,6 +160,11 @@ Parameters:
     AllowedValues:
       - Single Availability
       - High Availability
+  SSLCertificateArn:
+    Description: The SSL Certificate ID used with the load balancer. Can be left blank
+      if deploying with Single Availability.
+    Type: String
+    Default: ''
   QSS3BucketName:
     Type: String
     Description: |
@@ -254,6 +262,7 @@ Resources:
         AppInstanceType: !Ref AppInstanceType
         DeploymentId: !Ref DeploymentId
         Availability: !Ref Availability
+        SSLCertificateArn: !Ref SSLCertificateArn
       TemplateURL: 
         !Sub
           - "https://${S3Bucket}.s3.${S3Region}.${AWS::URLSuffix}/${QSS3KeyPrefix}templates/etleap-master.yaml"
