@@ -39,7 +39,7 @@ As shown in figure 2, the Quick Start sets up the following:
 ** A managed network address translation (NAT) gateway to allow outbound internet access for resources in the private subnets.footnote:note[]
 ** Two Amazon EC2 instances running {partner-product-name}.
 * In the private subnets:
-** An Amazon Relational Database Service (Amazon RDS) MySQL database used by {partner-company-name} to store metadata.
+** An Amazon Relational Database Service (Amazon RDS) MySQL database replicated across two Availability Zones used by {partner-company-name} to store metadata.
 ** An Amazon EMR cluster used by {partner-company-name} to run extractions and transformations.
 * An Amazon S3 bucket used by {partner-company-name} to store extracted and transformed data.
 * One AWS Key Management Service (AWS KMS) key used to encrypt secrets within {partner-company-name}.
