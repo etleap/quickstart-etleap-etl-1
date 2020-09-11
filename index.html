@@ -762,6 +762,22 @@ table.tableblock .title,
 table p {
   margin: 0rem;
 }
+
+/* Add border around hyperlink images */
+a img {
+    border: 1px solid #A4A4A4;
+}
+
+.preview_mode {
+	border-color:#e0e0dc;
+	-webkit-box-shadow:0 1px 4px #e0e0dc;
+	box-shadow:0 1px 4px #e0e0dc;
+  background:#ffffb3;
+  padding-bottom: 2rem;
+}
+.preview_mode .tableblock {
+  background:#ffffb3;
+}
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 </head>
@@ -784,17 +800,22 @@ table p {
 </li>
 <li><a href="#_deployment_steps">Deployment steps</a>
 <ul class="sectlevel2">
+<li><a href="#_sign_in_to_your_aws_account">Sign in to your AWS account</a></li>
+<li><a href="#_subscribe_to_the_etleap_etl_ami">Subscribe to the Etleap ETL AMI</a></li>
+<li><a href="#_launch_the_quick_start">Launch the Quick Start</a></li>
 <li><a href="#_launch_into_an_existing_vpc">Launch into an existing VPC</a></li>
 <li><a href="#_launch_into_a_new_vpc">Launch into a new VPC</a></li>
 </ul>
 </li>
+<li><a href="#_test_the_deployment">Test the deployment</a></li>
+<li><a href="#best-practices-for-using-etleap-on-aws">Best practices for using Etleap on AWS</a></li>
+<li><a href="#security">Security</a></li>
+<li><a href="#support">Support</a></li>
+<li><a href="#_troubleshooting">Troubleshooting</a></li>
 <li><a href="#_send_us_feedback">Send us feedback</a></li>
 <li><a href="#_quick_start_reference_deployments">Quick Start reference deployments</a></li>
-<li><a href="#_github_repository">GitHub repository</a>
-<ul class="sectlevel3">
+<li><a href="#_github_repository">GitHub repository</a></li>
 <li><a href="#_notices">Notices</a></li>
-</ul>
-</li>
 </ul>
 </div>
 </div>
@@ -805,22 +826,27 @@ table p {
 <h2 id="_quick_start_reference_deployment" class="discrete text-left text-center">Quick Start Reference Deployment</h2>
 <div class="imageblock text-center">
 <div class="content">
-<img src="https://aws-quickstart.s3.amazonaws.com/quickstart-etleap-etl/docs/boilerplate/.images/aws-quickstart-graphic.png" alt="QS" width="80" height="80">
+<img src="images/aws-quickstart-graphic.png" alt="QS" width="80" height="80">
 </div>
 </div>
 <h3 id="_draft_document_unofficial_guidance" class="discrete text-center">DRAFT DOCUMENT / UNOFFICIAL GUIDANCE</h3>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph text-center">
+<div class="paragraph">
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/__settings</em>.adoc</code></strong>_</p>
+</div>
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph text-center">
 <p><strong>August, 2020</strong><br>
 <em>Caius Brindescu and Archie Menzies, Etleap</em><br>
 <em>Dave May, Quick Start team</em></p>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p><em><strong>The previous information is configured within <code>partner_editable/_settings.adoc</code></strong></em></p>
-</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -843,15 +869,20 @@ report bugs, or submit feature ideas for this Quick Start.
 <h2 id="_overview">Overview</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/overview_target_and_usage</code></strong></em></p>
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/overview_target_and_usage.adoc</code></strong></em></p>
 </div>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p>This Quick Start is for users who want to run Etleap ETL within an existing or new virtual private cloud (VPC) in their own AWS account. When deploying to a new VPC, the Quick Start builds a new AWS environment with the VPC and all required infrastructure components.</p>
-</div>
-</div>
-</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -874,9 +905,13 @@ collaborated with AWS on the content of the Quick Start.
 <div class="paragraph">
 <p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/product_description.adoc</code></strong></em></p>
 </div>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p>Etleap ETL is an extract, transform, and load (ETL) service for building data warehouses using Amazon Redshift and data lakes using Amazon Simple Storage Service (Amazon S3) and AWS Glue. Using Etleap on the AWS Cloud, you can:</p>
 </div>
 <div class="ulist">
@@ -897,9 +932,10 @@ collaborated with AWS on the content of the Quick Start.
 <p><strong>Operate</strong> your pipelines without headaches. Automatic detection and guided resolution of schema changes and performance issues keep your data repository available, reliable, and fast.</p>
 </li>
 </ul>
-</div>
-</div>
-</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect1">
@@ -936,13 +972,18 @@ After you deploy the Quick Start, enable the <a href="https://docs.aws.amazon.co
 <div class="paragraph">
 <p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/licenses.adoc</code></strong></em></p>
 </div>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p>This Quick Start requires either a subscription to the Amazon Machine Image (AMI) for Etleap or a license provided by Etleap. An AMI subscription is available from <a href="https://aws.amazon.com/marketplace/pp/B08C4KVR5Z" target="_blank" rel="noopener">AWS Marketplace</a>. Additional pricing, terms, and conditions may apply. For instructions, see the <strong>Deployment steps</strong> section.</p>
-</div>
-</div>
-</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect1">
@@ -951,11 +992,15 @@ After you deploy the Quick Start, enable the <a href="https://docs.aws.amazon.co
 <div class="paragraph">
 <p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/architecture.adoc</code></strong></em></p>
 </div>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p>Deploying this Quick Start for a new VPC with
-default parameters builds the following Etleap Etleap ETL environment in the
+default parameters builds the following Etleap ETL environment in the
 AWS Cloud.</p>
 </div>
 <div id="architecture1" class="imageblock">
@@ -1025,8 +1070,88 @@ AWS Cloud.</p>
 </li>
 </ul>
 </div>
+<div class="paragraph">
+<p>If the "Availability" parameter is set to "High Availability", the following Etleap ETL architecture is deployed.</p>
 </div>
+<div id="architecture1" class="imageblock">
+<div class="content">
+<a class="image" href="images/etleap-architecture-diagram-ha.png"><img src="images/etleap-architecture-diagram-ha.png" alt="Architectural diagram" width="643" height="489"></a>
 </div>
+<div class="title">Figure 2. Highly available Quick Start architecture for Etleap ETL on AWS</div>
+</div>
+<div class="paragraph">
+<p>As shown in figure 2, the Quick Start sets up the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A VPC configured with public and private subnets, according to AWS best practices, to provide you with your own virtual network on AWS.<sup class="footnote" id="_footnote_note">[<a id="_footnoteref_2" class="footnote" href="#_footnotedef_2" title="View footnote.">2</a>]</sup></p>
+</li>
+<li>
+<p>In the public subnets:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A managed network address translation (NAT) gateway to allow outbound internet access for resources in the private subnets.<sup class="footnoteref">[<a class="footnote" href="#_footnotedef_1" title="View footnote.">1</a>]</sup></p>
+</li>
+<li>
+<p>Two Amazon EC2 instances running Etleap ETL.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>In the private subnets:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>An Amazon Relational Database Service (Amazon RDS) MySQL database replicated across two Availability Zones used by Etleap to store metadata.</p>
+</li>
+<li>
+<p>An Amazon EMR cluster used by Etleap to run extractions and transformations.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>An Amazon S3 bucket used by Etleap to store extracted and transformed data.</p>
+</li>
+<li>
+<p>One AWS Key Management Service (AWS KMS) key used to encrypt secrets within Etleap.</p>
+</li>
+<li>
+<p>Four AWS Identity and Access Management (IAM) roles:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>One attached to the Etleap Amazon EC2 instance.</p>
+</li>
+<li>
+<p>One attached to the Amazon EMR cluster nodes.</p>
+</li>
+<li>
+<p>One used by Amazon EMR for provisioning and service-level actions (see <a href="https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-iam-role.html" target="_blank" rel="noopener">EMR Role</a>).</p>
+</li>
+<li>
+<p>One used by Amazon EMR for auto scaling (see <a href="https://docs.aws.amazon.com/emr/latest/ManagementGuide/emr-iam-role-automatic-scaling.html" target="_blank" rel="noopener">Auto Scaling Role</a>).</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div id="footnotes">
+<hr>
+<div class="footnote" id="_footnotedef_1">
+<a href="#_footnoteref_1">1</a>. The template that deploys the Quick Start into an existing VPC skips this component and prompts you for your existing VPC configuration.
+</div>
+<div class="footnote" id="_footnotedef_2">
+<a href="#_footnoteref_2">2</a>. The template that deploys the Quick Start into an existing VPC skips this component and prompts you for your existing VPC configuration.
+</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 <div class="sect1">
@@ -1046,13 +1171,18 @@ Cloud.</p>
 <div class="paragraph">
 <p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/specialized_knowledge.adoc</code></strong></em></p>
 </div>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p>This Quick Start assumes that you are familiar with your data sources, Amazon Redshift, and Amazon S3 with AWS Glue data lakes.</p>
-</div>
-</div>
-</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect2">
 <h3 id="_aws_account">AWS account</h3>
@@ -1076,8 +1206,7 @@ Cloud.</p>
 <div class="paragraph">
 <p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/service_limits.adoc</code></strong></em></p>
 </div>
-<div class="exampleblock">
-<div class="content">
+<div class="preview_mode">
 <table class="tableblock frame-all grid-all stretch">
 <colgroup>
 <col style="width: 50%;">
@@ -1126,17 +1255,12 @@ Cloud.</p>
 </table>
 </div>
 </div>
-</div>
 <div class="sect3">
-<h4 id="_supported_regions">Supported regions</h4>
-<div class="paragraph">
-<p>The following regions are currently supported by this Quick Start.</p>
-</div>
+<h4 id="_supported_regions">Supported Regions</h4>
 <div class="paragraph">
 <p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/regions.adoc</code></strong></em></p>
 </div>
-<div class="exampleblock">
-<div class="content">
+<div id="preview_mode">
 <div class="ulist">
 <ul>
 <li>
@@ -1202,7 +1326,6 @@ Cloud.</p>
 </ul>
 </div>
 </div>
-</div>
 <div class="admonitionblock tip">
 <table>
 <tr>
@@ -1210,7 +1333,7 @@ Cloud.</p>
 <i class="fa icon-tip" title="Tip"></i>
 </td>
 <td class="content">
-Certain regions are available on an opt-in basis. Refer to the AWS Documentation on <a href="https://docs.aws.amazon.com/general/latest/gr/rande-manage.html" target="_blank" rel="noopener">Managing Regions</a> for more information.
+Certain Regions are available on an opt-in basis. Refer to the AWS Documentation on <a href="https://docs.aws.amazon.com/general/latest/gr/rande-manage.html" target="_blank" rel="noopener">Managing Regions</a> for more information.
 </td>
 </tr>
 </table>
@@ -1227,22 +1350,31 @@ Certain regions are available on an opt-in basis. Refer to the AWS Documentation
 <div class="paragraph">
 <p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/pre-reqs.adoc</code></strong></em></p>
 </div>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p>This Quick Start requires either a subscription to the AMI for Etleap in AWS Marketplace or a license provided by Etleap.</p>
-</div>
-</div>
-</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="sect3">
 <h4 id="_deployment_options">Deployment options</h4>
 <div class="paragraph">
 <p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/deployment_options.adoc</code></strong></em></p>
 </div>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
+<table class="tableblock frame-all grid-all stretch preview_mode">
+<colgroup>
+<col style="width: 100%;">
+</colgroup>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><div class="content"><div class="paragraph">
 <p>This Quick Start provides two deployment options:</p>
 </div>
 <div class="ulist">
@@ -1257,9 +1389,10 @@ Certain regions are available on an opt-in basis. Refer to the AWS Documentation
 </div>
 <div class="paragraph">
 <p>The Quick Start provides separate templates for these options. It also lets you configure Classless Inter-Domain Routing (CIDR) blocks, instance types, and Etleap ETL settings, as discussed later in this guide.</p>
-</div>
-</div>
-</div>
+</div></div></td>
+</tr>
+</tbody>
+</table>
 </div>
 </div>
 </div>
@@ -1268,13 +1401,11 @@ Certain regions are available on an opt-in basis. Refer to the AWS Documentation
 <h2 id="_deployment_steps">Deployment steps</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/deploy_steps</em>.adoc</code></strong>_</p>
+<p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/deploy_steps.adoc</code></strong></em></p>
 </div>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
-<p>=== Sign in to your AWS account</p>
-</div>
+<div class="preview_mode">
+<div class="sect2">
+<h3 id="_sign_in_to_your_aws_account">Sign in to your AWS account</h3>
 <div class="olist arabic">
 <ol class="arabic">
 <li>
@@ -1285,11 +1416,11 @@ Certain regions are available on an opt-in basis. Refer to the AWS Documentation
 </li>
 </ol>
 </div>
-<div class="paragraph">
-<p>=== Subscribe to the Etleap ETL AMI</p>
 </div>
+<div class="sect2">
+<h3 id="_subscribe_to_the_etleap_etl_ami">Subscribe to the Etleap ETL AMI</h3>
 <div class="paragraph">
-<p>This Quick Start requires a subscription to the AMI for Etleap ETL in AWS Marketplace.</p>
+<p>This Quick Start requires a subscription to the AMI for Etleap ETL in AWS Marketplace or a license provided by Etleap. If Etleap has provided you with a deployment ID, you can skip ahead and launch the Quick Start in the next section.</p>
 </div>
 <div class="olist arabic">
 <ol class="arabic">
@@ -1297,7 +1428,7 @@ Certain regions are available on an opt-in basis. Refer to the AWS Documentation
 <p>Sign in to your AWS account.</p>
 </li>
 <li>
-<p>Open the page for the Etleap ETL AMI in <a href="https://aws.amazon.com/marketplace/pp/B07NM5J1PB?qid=1594311874425&amp;sr=0-1&amp;ref_=srh_res_product_title">AWS Marketplace</a>, and then choose <strong>Continue to Subscribe</strong>.</p>
+<p>Open the page for the Etleap ETL AMI in <a href="https://aws.amazon.com/marketplace/pp/B08C4KVR5Z">AWS Marketplace</a>, and then choose <strong>Continue to Subscribe</strong>.</p>
 </li>
 <li>
 <p>Review the terms and conditions for software usage, and then choose <strong>Accept Terms</strong>.<br>
@@ -1308,9 +1439,9 @@ A confirmation page loads, and an email notification is sent to the account owne
 </li>
 </ol>
 </div>
-<div class="paragraph">
-<p>=== Launch the Quick Start</p>
 </div>
+<div class="sect2">
+<h3 id="_launch_the_quick_start">Launch the Quick Start</h3>
 <div class="admonitionblock note">
 <table>
 <tr>
@@ -1336,10 +1467,10 @@ You are responsible for the cost of the AWS services used while running this Qui
 </colgroup>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://qs_launch_link" target="_blank" rel="noopener">Deploy Etleap ETL to a new VPC on AWS</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://fwd.aws/eXbre" target="_blank" rel="noopener">Deploy Etleap ETL to a new VPC on AWS</a></p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="http://qs_launch_link" target="_blank" rel="noopener">Deploy Etleap ETL to an existing VPC on AWS</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://fwd.aws/YzagR" target="_blank" rel="noopener">Deploy Etleap ETL to an existing VPC on AWS</a></p></td>
 </tr>
 </tbody>
 </table>
@@ -1379,7 +1510,6 @@ If you’re deploying Etleap ETL into an existing VPC, make sure that your VPC h
 </ol>
 </div>
 </div>
-</div>
 <div class="paragraph">
 <p>In the following tables, parameters are listed by category and described separately for the deployment options. When you finish reviewing and customizing the parameters, choose <strong>Next</strong>.</p>
 </div>
@@ -1395,6 +1525,7 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </td>
 </tr>
 </table>
+</div>
 </div>
 <div class="sect2">
 <h3 id="_launch_into_an_existing_vpc">Launch into an existing VPC</h3>
@@ -1414,45 +1545,39 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">VPC to deploy Etleap
+<td class="tableblock halign-left valign-top"><p class="tableblock">The VPC where to deploy Etleap in.
 (<code>UserSpecifiedVPCId</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The VPC in which to deploy ETLeap.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO_DESCRIPTION</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Public subnet A
+<td class="tableblock halign-left valign-top"><p class="tableblock">The first public subnet
 (<code>PublicSubnetA</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The first public subnet.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO_DESCRIPTION</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Public subnet B
+<td class="tableblock halign-left valign-top"><p class="tableblock">The second public subnet
 (<code>PublicSubnetB</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The second public subnet.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO_DESCRIPTION</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Private subnet A
+<td class="tableblock halign-left valign-top"><p class="tableblock">The first private subnet
 (<code>PrivateSubnetA</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The first private subnet.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO_DESCRIPTION</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Private subnet B
+<td class="tableblock halign-left valign-top"><p class="tableblock">A second private subnet
 (<code>PrivateSubnetB</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The second private subnet.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Allowed IP CIDR block
-(<code>AllowedIPCidr</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>0.0.0.0/0</code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">CIDR block allowed remote access to the environment.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">NO_DESCRIPTION</p></td>
 </tr>
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 2. Etleap configuration</caption>
+<caption class="title">Table 2. Network configuration</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1467,24 +1592,44 @@ Region</code>, and <code>Quick Start S3 key prefix</code>. Changing these parame
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Key pair name
-(<code>KeyPairName</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">EC2 key pair name.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Allowed IP CIDR block
+(<code>AllowedIPCidr</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>0.0.0.0/0</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">CIDR block allowed remote access to the environment.</p></td>
 </tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 3. Etleap configuration</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 11%;">
+<col style="width: 73%;">
+</colgroup>
+<thead>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Deployment ID
+<th class="tableblock halign-left valign-top">Parameter label (name)</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Etleap Deployment ID
 (<code>DeploymentId</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><em>Optional</em></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The ID of the deployment, provided by Etleap. Leave blank if purchased through AWS Marketplace.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Deployment ID provided by Etleap. If purchased through AWS Marketplace, leave this blank.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Deployment secret (optional)
 (<code>UserSpecifiedDeploymentSecret</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><em>Optional</em></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The ARN of the secret used to communicate with Etleap. If left blank, one is generated for you.
-The ARN of the secret used in the deployment will be present in the outputs.
-If you have previously launched Etleap with the same deployment ID, use the same secret key.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Blank string</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The ARN of the secret used to communicate with Etleap. If left blank, one
+is generated for you.</p>
+<p class="tableblock">The ARN of the secret that is used in the deployment will be present in
+the outputs.</p>
+<p class="tableblock">If you have previously launched Etleap with the same deployment ID, please
+make sure you use the same secret key.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">First name
@@ -1502,18 +1647,60 @@ If you have previously launched Etleap with the same deployment ID, use the same
 <td class="tableblock halign-left valign-top"><p class="tableblock">Email address
 (<code>Email</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Your email address.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Your email address. You may opt-in to register your deployment with Etleap. If you do, Etleap requires that your email domain is globally unique and that it isn&#8217;t a personal email domain (such as gmail.com or yahoo.com), so use your company email address.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Etleap initial login password
 (<code>SetupPassword</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Your initial login password. You will be asked to change this password when you log in for the first time.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Your initial login password. You will be asked to change this password when you log
+in for the first time.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SSL certificate ARN
+(<code>SSLCertificateArn</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Blank string</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The SSL Certificate ID used with the load balancer. Can be left blank if deploying with Single Availability.</p></td>
 </tr>
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 3. AWS Quick Start configuration</caption>
+<caption class="title">Table 4. Instance configuration</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 11%;">
+<col style="width: 73%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter label (name)</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EC2 instance type
+(<code>AppInstanceType</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The EC2 instance type.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Key pair name
+(<code>KeyPairName</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EC2 key pair name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Availability Mode
+(<code>Availability</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Single Availability</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Availability Mode</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 5. AWS Quick Start configuration</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1544,7 +1731,7 @@ It cannot start or end with a hyphen (-).</p></td>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Quick Start S3 key prefix
 (<code>QSS3KeyPrefix</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code>quickstart-etleap-etl/</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock">S3 key prefix for the Quick Start assets. Quick Start key prefix
 can include numbers, lowercase letters, uppercase letters, hyphens (-), and
 forward slashes (/).</p></td>
@@ -1555,7 +1742,7 @@ forward slashes (/).</p></td>
 <div class="sect2">
 <h3 id="_launch_into_a_new_vpc">Launch into a new VPC</h3>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 4. Network configuration</caption>
+<caption class="title">Table 6. Network configuration</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1590,7 +1777,7 @@ forward slashes (/).</p></td>
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 5. Etleap configuration</caption>
+<caption class="title">Table 7. Etleap configuration</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1605,22 +1792,16 @@ forward slashes (/).</p></td>
 </thead>
 <tbody>
 <tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Key pair name
-(<code>KeyPairName</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">EC2 key pair name.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Deployment ID
+<td class="tableblock halign-left valign-top"><p class="tableblock">Etleap Deployment ID
 (<code>DeploymentId</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><em>Optional</em></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The ID of the deployment, provided by Etleap. Leave blank if purchased through AWS Marketplace.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The Deployment ID provided by Etleap. If purchased through AWS Marketplace, leave this blank.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Deployment secret (optional)
 (<code>UserSpecifiedDeploymentSecret</code>)</p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock"><code><em>Optional</em></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">The ARN of the secret used to communicate with Etleap. If left blank, one will be generated for you.
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Blank string</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The ARN of the secret used to communicate with Etleap. If left blank, one is generated for you.
 The ARN of the secret used in the deployment will be present in the outputs.
 If you have previously launched Etleap with the same deployment ID, use the same secret key.</p></td>
 </tr>
@@ -1640,18 +1821,59 @@ If you have previously launched Etleap with the same deployment ID, use the same
 <td class="tableblock halign-left valign-top"><p class="tableblock">Email address
 (<code>Email</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Your email address.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Your email address. You may opt-in to register your deployment with Etleap. If you do, Etleap requires that your email domain is globally unique and that it isn’t a personal email domain (such as gmail.com or yahoo.com), so please use your company email address.</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top"><p class="tableblock">Etleap initial login password
 (<code>SetupPassword</code>)</p></td>
 <td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
-<td class="tableblock halign-left valign-top"><p class="tableblock">Your initial login password. You will be asked to change this when you log in for the first time.</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Your initial login password. You will be asked to change this password when you log in for the first time.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">SSL certificate ARN
+(<code>SSLCertificateArn</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Blank string</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The SSL Certificate ID used with the load balancer. Can be left blank if deploying with Single Availability.</p></td>
 </tr>
 </tbody>
 </table>
 <table class="tableblock frame-all grid-all stretch">
-<caption class="title">Table 6. AWS Quick Start configuration</caption>
+<caption class="title">Table 8. Instance configuration</caption>
+<colgroup>
+<col style="width: 16%;">
+<col style="width: 11%;">
+<col style="width: 73%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Parameter label (name)</th>
+<th class="tableblock halign-left valign-top">Default value</th>
+<th class="tableblock halign-left valign-top">Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EC2 instance type
+(<code>AppInstanceType</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>t3.large</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">The EC2 instance type.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Key pair name
+(<code>KeyPairName</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code><strong><em>Requires input</em></strong></code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">EC2 key pair name.</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">AvailabilityMode
+(<code>Availability</code>)</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><code>Single Availability</code></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Availability Mode</p></td>
+</tr>
+</tbody>
+</table>
+<table class="tableblock frame-all grid-all stretch">
+<caption class="title">Table 9. AWS Quick Start configuration</caption>
 <colgroup>
 <col style="width: 16%;">
 <col style="width: 11%;">
@@ -1704,53 +1926,62 @@ forward slashes (/).</p></td>
 <p>Monitor the status of the stack. When the status is <strong>CREATE_COMPLETE</strong>, the Etleap ETL deployment is ready.</p>
 </li>
 <li>
-<p>Use the values displayed in the <strong>Outputs</strong> tab for the stack, as shown in figure 2, to view the created resources.</p>
+<p>Use the values displayed in the <strong>Outputs</strong> tab for the stack, as shown in <a href="#cfn_outputs">Etleap ETL outputs after successful deployment</a>, to view the created resources.</p>
 </li>
 </ol>
 </div>
 <div id="cfn_outputs" class="imageblock">
 <div class="content">
-<img src="images/cfn_outputs.png" alt="cfn_outputs" width="648" height="439">
+<a class="image" href="images/cfn_outputs.png"><img src="images/cfn_outputs.png" alt="cfn_outputs" width="648" height="439"></a>
 </div>
-<div class="title">Figure 2. Etleap ETL outputs after successful deployment</div>
+<div class="title">Figure 3. Etleap ETL outputs after successful deployment</div>
 </div>
 <div class="paragraph">
 <p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/additional_info.adoc</code></strong></em></p>
 </div>
-<div class="exampleblock">
-<div class="content">
+<div class="preview_mode">
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_test_the_deployment">Test the deployment</h2>
+<div class="sectionbody">
 <div class="paragraph">
-<p>== Test the deployment
-After the stack has been successfully created, the <strong>Outputs</strong> tab shows the IP address of the Etleap instance as well as the email and password that you can use to log in.</p>
+<p>After the stack has been successfully created, the <strong>Outputs</strong> tab shows the IP address of the Etleap instance as well as the email and password that you can use to log in.</p>
 </div>
-<div id="best-practices-for-using-etleap-on-aws" class="paragraph">
-<p>== Best practices for using Etleap on AWS</p>
 </div>
+</div>
+<div class="sect1">
+<h2 id="best-practices-for-using-etleap-on-aws">Best practices for using Etleap on AWS</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Once logged in, the onboarding guide can help you get started with Etleap. For additional guidance and best practices, use the in-application link to the product documentation.</p>
 </div>
-<div id="security" class="paragraph">
-<p>== Security</p>
 </div>
+</div>
+<div class="sect1">
+<h2 id="security">Security</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>Etleap is accessed through HTTPS only. You should restrict the IP range in the Etleap EC2 security group for port 443 to only the IP addresses that you use to access Etleap. Alternatively, you can launch the Etleap EC2 instance in a private subnet.</p>
 </div>
-<div id="support" class="paragraph">
-<p>== Support</p>
 </div>
+</div>
+<div class="sect1">
+<h2 id="support">Support</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>The Etleap support team is standing by to assist you in configuring connections and operating your pipelines. Contact them through the in-application instant message option or send an email to <a href="mailto:support@etleap.com">support@etleap.com</a>.</p>
-</div>
-</div>
 </div>
 <div class="paragraph">
 <p><em><strong>This portion of the deployment guide is located at <code>docs/partner_editable/faq_troubleshooting.adoc</code></strong></em></p>
 </div>
-<div class="exampleblock">
-<div class="content">
-<div class="paragraph">
-<p>== Troubleshooting</p>
+<div class="preview_mode">
 </div>
+</div>
+<div class="sect1">
+<h2 id="_troubleshooting">Troubleshooting</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p><strong>Q.</strong> I encountered a <strong>CREATE_FAILED</strong> error when I launched the Quick Start.</p>
 </div>
@@ -1777,8 +2008,6 @@ When you set <strong>Rollback on failure</strong> to <strong>Disabled</strong>, 
 </div>
 <div class="paragraph">
 <p><strong>A.</strong> Launch the Quick Start templates from the links in this guide or from another S3 bucket. If you deploy the templates from a local copy on your computer or from a location other than an S3 bucket, you might encounter template size limitations. For more information about AWS CloudFormation quotas, see the <a href="http://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cloudformation-limits.html" target="_blank" rel="noopener">AWS documentation</a>.</p>
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -1811,8 +2040,11 @@ and to share your customizations with others.</p>
 <div class="paragraph">
 <p>© 2020, Amazon Web Services Inc., or its affiliates, and Etleap. All rights reserved.</p>
 </div>
-<div class="sect3">
-<h4 id="_notices">Notices</h4>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_notices">Notices</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>This document is provided for informational purposes only. It represents AWS’s current product offerings and practices as of the date of issue of this document, which are subject to change without notice. Customers are responsible for making their own independent assessment of the information in this document and any use of AWS’s products or services, each of which is provided “as is” without warranty of any kind, whether expressed or implied. This document does not create any warranties, representations, contractual commitments, conditions, or assurances from AWS, its affiliates, suppliers, or licensors. The responsibilities and liabilities of AWS to its customers are controlled by AWS agreements, and this document is not part of, nor does it modify, any agreement between AWS and its customers.</p>
 </div>
@@ -1822,16 +2054,9 @@ and to share your customizations with others.</p>
 </div>
 </div>
 </div>
-</div>
-<div id="footnotes">
-<hr>
-<div class="footnote" id="_footnotedef_1">
-<a href="#_footnoteref_1">1</a>. The template that deploys the Quick Start into an existing VPC skips this component and prompts you for your existing VPC configuration.
-</div>
-</div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2020-08-13 14:30:41 UTC
+Last updated 2020-09-11 00:45:56 UTC
 </div>
 </div>
 </body>
